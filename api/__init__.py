@@ -1,4 +1,5 @@
 from flask import Flask
+from flask_sqlalchemy import SQLAlchemy
 import os
 
 app = Flask(
@@ -8,7 +9,18 @@ app = Flask(
     static_url_path='/assets'
 )
 
-from .routes import *
+# Configuração do SQLAlchemy
+DRIVER = '{ODBC Driver 17 for SQL Server}'
+SERVER = 'localhost\\SQLEXPRESS'
+DATABASE = 'onHour'
+USERNAME = 'root'
+PASSWORD = ''
 
-if __name__ == "__main__":
-    app.run(debug=True)
+app.config['SQLALCHEMY_DATABASE_URI'] = (
+    f"mssql+pyodbc://{USERNAME}:{PASSWORD}@{SERVER}/{DATABASE}?driver={DRIVER}"
+)
+app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
+
+db = SQLAlchemy(app)
+
+from .routes import *
