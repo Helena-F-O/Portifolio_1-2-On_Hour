@@ -9,18 +9,13 @@ app = Flask(
     static_url_path='/assets'
 )
 
-# Configuração do SQLAlchemy
-DRIVER = '{ODBC Driver 17 for SQL Server}'
-SERVER = 'localhost\\SQLEXPRESS'
-DATABASE = 'onHour'
-USERNAME = 'root'
-PASSWORD = ''
-
-app.config['SQLALCHEMY_DATABASE_URI'] = (
-    f"mssql+pyodbc://{USERNAME}:{PASSWORD}@{SERVER}/{DATABASE}?driver={DRIVER}"
-)
+# Ajuste a string de conexão para o SQL Server
+app.config['SQLALCHEMY_DATABASE_URI'] = 'mssql+pyodbc://@DESKTOP-R69VPG8\\SQLEXPRESS/onHour?driver=ODBC+Driver+17+for+SQL+Server'
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 
 db = SQLAlchemy(app)
 
 from .routes import *
+
+if __name__ == "__main__":
+    app.run(debug=True)
