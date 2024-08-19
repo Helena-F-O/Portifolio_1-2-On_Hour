@@ -1,29 +1,34 @@
-from flask import render_template, send_from_directory, jsonify
-from . import app
-from flask import jsonify
-from . import app, db
-from .models import User
+from flask import render_template, send_from_directory, jsonify, Blueprint
+from api.models import get_db_connection
 
-@app.route('/')
+routes_bp = Blueprint('routes', __name__)
+
+@routes_bp.route('/')
 def index():
     return render_template('index.html')
 
-@app.route('/pages/<path:path>')
+@routes_bp.route('/pages/<path:path>')
 def serve_pages(path):
     try:
-        print(f'Trying to serve: {path}')  # Debug message
-        return render_template(path)
+        # Serve HTML pages from the 'pages' folder
+        return render_template(f'{path}')
     except Exception as e:
-        print(f'Error serving {path}: {e}')  # Debug message
+        print(f'Error serving {path}: {e}')
         return "Page not found", 404
 
-
-@app.route('/assets/<path:path>')
+@routes_bp.route('/assets/<path:path>')
 def serve_assets(path):
-    return send_from_directory(app.static_folder, path)
+    # Serve static files from the 'assets' folder
+    return send_from_directory('assets', path)
 
-@app.route('/users', methods=['GET'])
-def get_users():
-    users = User.query.all()
-    users_list = [{'cpf': user.cpf, 'usuario': user.usuario, 'email': user.email, 'senha': user.senha, 'horas_exigidas': user.horas_exigidas} for user in users]
-    return jsonify(users_list)
+@routes_bp.route('/clientes', methods=['GET'])
+def get_clientes():
+    connection = get_db_connection()
+    if connection:
+        cursor = connection.cursor(dictionary=True)
+        cursor.execute("SELECT * FROM clientes")
+        resultados = cursor.fetchall()
+        cursor.close()
+        connection.close()
+        return jsonify(resultados)
+    return jsonify({"error": "Não foi possível conectar ao banco de dados"}), 500

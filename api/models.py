@@ -1,9 +1,17 @@
-from . import db
+import mysql.connector
+from mysql.connector import Error
 
-class User(db.Model):
-    __tablename__ = 'usuarios'
-    cpf = db.Column(db.String, primary_key=True)
-    usuario = db.Column(db.String)
-    email = db.Column(db.String)
-    senha = db.Column(db.String)
-    horas_exigidas = db.Column(db.String)
+def get_db_connection():
+    try:
+        connection = mysql.connector.connect(
+            user='root',
+            password='1234',
+            host='127.0.0.1',
+            database='onHour'
+        )
+        if connection.is_connected():
+            print("Conexão com o banco de dados bem-sucedida")
+            return connection
+    except Error as e:
+        print(f"Erro ao conectar ao MySQL: {e}")
+        return None
