@@ -242,6 +242,34 @@
                     </tr>
                   </tbody>
                 </table>
+                <table>
+                  <thead>
+                      <tr>
+                          <th>CPF</th>
+                          <th>Usuário</th>
+                          <th>Email</th>
+                          <th>Senha</th>
+                          <th>Horas Exigidas</th>
+                      </tr>
+                  </thead>
+                  <tbody>
+                      {% if data %}
+                          {% for row in data %}
+                          <tr>
+                              <td>{{ row['cpf'] }}</td>
+                              <td>{{ row['usuario'] }}</td>
+                              <td>{{ row['email'] }}</td>
+                              <td>{{ row['senha'] }}</td>
+                              <td>{{ row['horas_exigidas'] }}</td>
+                          </tr>
+                          {% endfor %}
+                      {% else %}
+                          <tr>
+                              <td colspan="5">Nenhum dado encontrado</td>
+                          </tr>
+                      {% endif %}
+                  </tbody>
+              </table>
               </div>
             </div>
           </div>
