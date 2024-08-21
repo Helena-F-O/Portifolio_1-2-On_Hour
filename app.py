@@ -1,5 +1,8 @@
 from flask import Flask, render_template
 from api.models import fetch_data
+from api.models import fetch_certificados
+from api.models import fetch_categorias
+
 
 app = Flask(__name__, static_folder='assets', template_folder='pages')
 
@@ -18,12 +21,10 @@ def regulamento():
 
 @app.route('/relatorio')
 def relatorio():
-    data = fetch_data()
-    if not data:
-        print("Nenhum dado encontrado para exibição.")
-    else:
-        print("Dados para exibição:", data)
+    data = fetch_certificados()
+    print("Dados passados para o template:", data)  # Verificar os dados enviados ao template
     return render_template('relatorio.html', data=data)
+
 
 @app.route('/sign-in')
 def signin():
@@ -35,7 +36,14 @@ def signup():
 
 @app.route('/tables')
 def tables():
-    return render_template('tables.html')
+    certificados_data = fetch_certificados()
+    categorias_data = fetch_categorias()
+    return render_template('tables.html', certificados=certificados_data, categorias=categorias_data)
+
+@app.route('/notifications')
+def notifications():
+    return render_template('notifications.html')
+
 
 if __name__ == '__main__':
     app.run(debug=True)

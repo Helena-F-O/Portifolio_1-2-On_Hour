@@ -35,4 +35,51 @@ def fetch_data():
         print("Falha ao conectar ao banco de dados")
     return []
 
+def fetch_certificados():
+    connection = get_db_connection()
+    if connection:
+        try:
+            cursor = connection.cursor(dictionary=True)
+            query = """
+            SELECT certificados.certificado, certificados.horas, categorias.categoria AS categoria
+            FROM certificados
+            JOIN categorias ON certificados.categoria_id = categorias.id_categoria
+            """
+            cursor.execute(query)
+            data = cursor.fetchall()
+            print("Dados retornados do banco de dados:", data)  # Verificar o conteúdo retornado
+            cursor.close()
+            connection.close()
+            return data
+        except Error as e:
+            print(f"Erro ao executar a consulta: {e}")
+    else:
+        print("Falha ao conectar ao banco de dados")
+    return []
 
+
+def fetch_categorias():
+    connection = get_db_connection()
+    if connection:
+        try:
+            cursor = connection.cursor(dictionary=True)
+            query = """
+            SELECT categorias.categoria, 
+                   categorias.horas_maximas, 
+                   COALESCE(SUM(certificados.horas), 0) AS total_horas, 
+                   COALESCE((SUM(certificados.horas) / categorias.horas_maximas) * 100, 0) AS percentual
+            FROM categorias
+            LEFT JOIN certificados ON categorias.id_categoria = certificados.categoria_id
+            GROUP BY categorias.categoria, categorias.horas_maximas
+            """
+            cursor.execute(query)
+            data = cursor.fetchall()
+            print("Dados retornados do banco de dados:", data)  # Verificar o conteúdo retornado
+            cursor.close()
+            connection.close()
+            return data
+        except Error as e:
+            print(f"Erro ao executar a consulta: {e}")
+    else:
+        print("Falha ao conectar ao banco de dados")
+    return []
