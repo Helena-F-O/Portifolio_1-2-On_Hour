@@ -64,17 +64,16 @@ def fetch_categorias():
         try:
             cursor = connection.cursor(dictionary=True)
             query = """
-            SELECT categorias.categoria, 
-                   categorias.horas_maximas, 
+            SELECT id_categoria, categoria, 
+                   horas_maximas, 
                    COALESCE(SUM(certificados.horas), 0) AS total_horas, 
                    COALESCE((SUM(certificados.horas) / categorias.horas_maximas) * 100, 0) AS percentual
             FROM categorias
             LEFT JOIN certificados ON categorias.id_categoria = certificados.categoria_id
-            GROUP BY categorias.categoria, categorias.horas_maximas
+            GROUP BY categorias.id_categoria, categorias.categoria, categorias.horas_maximas
             """
             cursor.execute(query)
             data = cursor.fetchall()
-            print("Dados retornados do banco de dados:", data)  # Verificar o conteúdo retornado
             cursor.close()
             connection.close()
             return data
@@ -83,3 +82,20 @@ def fetch_categorias():
     else:
         print("Falha ao conectar ao banco de dados")
     return []
+
+
+def add_certificado(nome_certificado, horas, data_emissao, categoria_id, cpf_usuario):
+    try:
+        connection = get_db_connection()
+        cursor = connection.cursor()
+        query = """
+        INSERT INTO certificados (nome_certificado, horas, data_emissao, categoria_id, cpf_usuario)
+        VALUES (%s, %s, %s, %s, %s)
+        """
+        cursor.execute(query, (nome_certificado, horas, data_emissao, categoria_id, cpf_usuario))
+        connection.commit()
+        cursor.close()
+        connection.close()
+        return True, None
+    except Error as e:
+        return False, str(e)

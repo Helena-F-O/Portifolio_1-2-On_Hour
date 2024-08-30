@@ -131,7 +131,7 @@
               </div>
               <div class="text-end pt-1">
                 <p class="text-sm mb-0 text-capitalize">Horas Totais</p>
-                <h4 class="mb-0">234h</h4>
+                <h4 class="mb-0">{{ usuario.horas_exigidas }}h</h4>
               </div>
             </div>
             <hr class="dark horizontal my-0">
@@ -148,7 +148,7 @@
               </div>
               <div class="text-end pt-1">
                 <p class="text-sm mb-0 text-capitalize">Horas Realizadas</p>
-                <h4 class="mb-0">100h</h4>
+                <h4 class="mb-0">{{ usuario.horas_feitas }}h</h4>
               </div>
             </div>
             <hr class="dark horizontal my-0">
@@ -165,7 +165,7 @@
               </div>
               <div class="text-end pt-1">
                 <p class="text-sm mb-0 text-capitalize">Horas Pendentes</p>
-                <h4 class="mb-0">134h</h4>
+                <h4 class="mb-0">{{ usuario.horas_faltantes }}h</h4>
               </div>
             </div>
             <hr class="dark horizontal my-0">
@@ -262,15 +262,15 @@
     new Chart(ctx, {
       type: "bar",
       data: {
-        labels: ["M", "T", "W", "T", "F", "S", "S"],
+        labels: ["Necessárias", "Realizadas", "Pendentes"],
         datasets: [{
-          label: "Sales",
+          label: "Horas",
           tension: 0.4,
           borderWidth: 0,
           borderRadius: 4,
           borderSkipped: false,
           backgroundColor: "rgba(255, 255, 255, .8)",
-          data: [50, 20, 10, 22, 50, 10, 40],
+          data: [{{ usuario.horas_exigidas }}, {{ usuario.horas_feitas }}, {{ usuario.horas_faltantes }}],
           maxBarThickness: 6
         }, ],
       },
