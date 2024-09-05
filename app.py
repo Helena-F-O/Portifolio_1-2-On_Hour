@@ -2,6 +2,8 @@ from flask import Flask, render_template
 from api.models import fetch_data
 from api.models import fetch_certificados
 from api.models import fetch_categorias
+from api.models import fetch_certificados_participacao
+from api.models import fetch_certificados_outros
 from flask import Flask, render_template, request, redirect, url_for, flash
 from api.models import get_db_connection
 from mysql.connector import Error
@@ -13,28 +15,42 @@ app = Flask(__name__, static_folder='assets', template_folder='pages')
 
 @app.route('/')
 def index():
-    # Buscando os dados do banco usando as funções do models.py
-    usuario_data = fetch_data()  # Retorna uma lista de dicionários
-    certificados_data = fetch_certificados()  # Retorna uma lista de dicionários
-    categorias_data = fetch_categorias()  # Retorna uma lista de dicionários
-
-    # Para este exemplo, vou considerar que você está interessado apenas no primeiro usuário retornado
+    usuario_data = fetch_data()
+    certificados_data = fetch_certificados()  # Dados gerais de certificados
+    categorias_data = fetch_categorias()  # Dados das categorias
+    
     if usuario_data:
-        usuario = usuario_data[0]  # Pegando o primeiro usuário
+        usuario = usuario_data[0]
+        cpf_usuario = usuario.get('cpf', '12345678900')  # Ajuste conforme necessário
     else:
         usuario = {}
+        cpf_usuario = '12345678900'  # Valor padrão ou ajuste conforme necessário
 
-    # Calculando horas feitas e horas faltantes
+    # Buscando certificados da pessoa na categoria "Participação"
+    certificados_participacao = fetch_certificados_participacao(cpf_usuario)
+    categorias_participacao = [certificado['categoria'] for certificado in certificados_participacao]
+    horas_participacao = [certificado['total_horas'] for certificado in certificados_participacao]
+
+    horas_participacao = horas_participacao or [0]  # Default to zero if empty
+    categorias_participacao = categorias_participacao or ['Nenhuma Participação']  # Default label if empty
+
+    # Buscando certificados das categorias restantes
+    certificados_outros = fetch_certificados_outros(cpf_usuario)
+    categorias_outros = [certificado['categoria'] for certificado in certificados_outros]
+    horas_outros = [certificado['total_horas'] for certificado in certificados_outros]
+
+    horas_outros = horas_outros or [0]  # Default to zero if empty
+    categorias_outros = categorias_outros or ['Nenhuma Categoria']  # Default label if empty
+
+    # Adicionando os cálculos ao contexto
     horas_exigidas = usuario.get('horas_exigidas', 0)
     total_horas_feitas = sum(categoria['total_horas'] for categoria in categorias_data)
     horas_faltantes = max(horas_exigidas - total_horas_feitas, 0)
 
-    # Adicionando os cálculos ao contexto
     usuario['horas_feitas'] = total_horas_feitas
     usuario['horas_faltantes'] = horas_faltantes
 
-    # Renderizando o template com os dados
-    return render_template('index.html', usuario=usuario, certificados=certificados_data, categorias=categorias_data)
+    return render_template('index.html', usuario=usuario, certificados=certificados_data, categorias=categorias_data, categorias_participacao=categorias_participacao, horas_participacao=horas_participacao, categorias_outros=categorias_outros, horas_outros=horas_outros)
 
 @app.route('/profile')
 def profile():

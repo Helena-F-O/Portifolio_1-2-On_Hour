@@ -99,3 +99,49 @@ def add_certificado(nome_certificado, horas, data_emissao, categoria_id, cpf_usu
         return True, None
     except Error as e:
         return False, str(e)
+
+def fetch_certificados_participacao(cpf_usuario):
+    connection = get_db_connection()
+    if connection:
+        try:
+            cursor = connection.cursor(dictionary=True)
+            query = """
+            SELECT ca.categoria, SUM(c.horas) as total_horas
+            FROM certificados c
+            JOIN categorias ca ON c.categoria_id = ca.id_categoria
+            WHERE c.usuario_cpf = %s AND ca.categoria LIKE '%Participação%'
+            GROUP BY ca.categoria
+            """
+            cursor.execute(query, (cpf_usuario,))
+            data = cursor.fetchall()
+            cursor.close()
+            connection.close()
+            return data
+        except Error as e:
+            print(f"Erro ao executar a consulta: {e}")
+    else:
+        print("Falha ao conectar ao banco de dados")
+    return []
+
+def fetch_certificados_outros(cpf_usuario):
+    connection = get_db_connection()
+    if connection:
+        try:
+            cursor = connection.cursor(dictionary=True)
+            query = """
+            SELECT ca.categoria, SUM(c.horas) as total_horas
+            FROM certificados c
+            JOIN categorias ca ON c.categoria_id = ca.id_categoria
+            WHERE c.usuario_cpf = %s AND ca.categoria NOT LIKE '%Participação%'
+            GROUP BY ca.categoria
+            """
+            cursor.execute(query, (cpf_usuario,))
+            data = cursor.fetchall()
+            cursor.close()
+            connection.close()
+            return data
+        except Error as e:
+            print(f"Erro ao executar a consulta: {e}")
+    else:
+        print("Falha ao conectar ao banco de dados")
+    return []
