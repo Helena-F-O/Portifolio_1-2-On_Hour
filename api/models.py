@@ -1,6 +1,11 @@
 # api/models.py
 import mysql.connector
 from mysql.connector import Error
+from reportlab.lib.pagesizes import letter
+from reportlab.lib.units import inch
+from reportlab.lib.styles import getSampleStyleSheet
+from reportlab.platypus import SimpleDocTemplate, Table, TableStyle
+from io import BytesIO
 
 def get_db_connection():
     try:
@@ -145,3 +150,36 @@ def fetch_certificados_outros(cpf_usuario):
     else:
         print("Falha ao conectar ao banco de dados")
     return []
+
+    def gerar_pdf_certificados(certificados):
+    buffer = BytesIO()
+    doc = SimpleDocTemplate(buffer, pagesize=letter)
+    elements = []
+
+    styles = getSampleStyleSheet()
+    title_style = styles['Title']
+    normal_style = styles['Normal']
+
+    # Adiciona o título
+    elements.append(Paragraph("Certificados", title_style))
+
+    # Adiciona os dados dos certificados
+    data = [['Certificado', 'Horas', 'Data de Emissão']]
+    for cert in certificados:
+        data.append([cert['certificado'], cert['horas'], cert['data_emissao']])
+
+    # Cria a tabela
+    table = Table(data)
+    table.setStyle(TableStyle([
+        ('BACKGROUND', (0, 0), (-1, 0), '#d3d3d3'),
+        ('TEXTCOLOR', (0, 0), (-1, 0), '#000000'),
+        ('ALIGN', (0, 0), (-1, -1), 'CENTER'),
+        ('GRID', (0, 0), (-1, -1), 1, '#000000'),
+        ('FONT', (0, 0), (-1, 0), 'Helvetica-Bold'),
+        ('FONT', (0, 1), (-1, -1), 'Helvetica')
+    ]))
+    elements.append(table)
+
+    doc.build(elements)
+    buffer.seek(0)
+    return buffer

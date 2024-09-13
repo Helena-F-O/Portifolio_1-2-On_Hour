@@ -7,6 +7,7 @@ from api.models import fetch_certificados_outros
 from flask import Flask, render_template, request, redirect, url_for, flash
 from api.models import get_db_connection
 from mysql.connector import Error
+from flask import send_file
 
 
 
@@ -129,6 +130,14 @@ def add_certificado():
     # Buscar categorias do banco de dados
     categorias = fetch_categorias()
     return render_template('add_certificado.html', categorias=categorias)
+
+@app.route('/download_certificados')
+def download_certificados():
+    # Função que retorna todos os certificados
+    certificados = fetch_certificados()  # Substitua com sua função para buscar certificados
+
+    pdf_buffer = gerar_pdf_certificados(certificados)
+    return send_file(pdf_buffer, as_attachment=True, download_name='certificados.pdf', mimetype='application/pdf')
 
 
 if __name__ == '__main__':
