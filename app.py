@@ -4,6 +4,7 @@ from api.models import fetch_certificados
 from api.models import fetch_categorias
 from api.models import fetch_certificados_participacao
 from api.models import fetch_certificados_outros
+from api.models import gerar_pdf_certificados
 from flask import Flask, render_template, request, redirect, url_for, flash
 from api.models import get_db_connection
 from mysql.connector import Error
@@ -133,9 +134,8 @@ def add_certificado():
 
 @app.route('/download_certificados')
 def download_certificados():
-    # Função que retorna todos os certificados
-    certificados = fetch_certificados()  # Substitua com sua função para buscar certificados
-
+    # Conectar ao banco de dados e buscar dados dos certificados
+    certificados = fetch_certificados()  # Função para buscar os certificados do banco
     pdf_buffer = gerar_pdf_certificados(certificados)
     return send_file(pdf_buffer, as_attachment=True, download_name='certificados.pdf', mimetype='application/pdf')
 

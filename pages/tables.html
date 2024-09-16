@@ -138,7 +138,7 @@
                       <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">Certificado</th>
                       <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 ps-2">Horas</th>
                       <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 ps-2">Tipo</th>
-                      <th></th>
+                      <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 ps-2">Opções</th>
                     </tr>
                   </thead>
                   <tbody>
@@ -163,8 +163,11 @@
                                 </td>
                                 <td class="align-middle">
                                     <button class="btn btn-link text-secondary mb-0">
-                                        <i class="fa fa-ellipsis-v text-xs"></i>
+                                        Editar
                                     </button>
+                                    <button class="btn btn-link text-secondary mb-0">
+                                        Excluir
+                                  </button>
                                 </td>
                             </tr>
                           {% endfor %}
@@ -239,11 +242,7 @@
                                                   <p class="text-sm font-weight-bold mb-0">Limite Atingido</p>
                                                 {% endif %}
                                             </td> 
-                                            <td class="align-middle">
-                                                <button class="btn btn-link text-secondary mb-0">
-                                                    <i class="fa fa-ellipsis-v text-xs"></i>
-                                                </button>
-                                            </td>
+                                            <td class="align-middle"></td>
                                         </tr>
                                     {% endfor %}
                                 {% else %}
