@@ -19,6 +19,7 @@ def index():
         usuario = {}
         cpf_usuario = '12345678900'  # Valor padrão ou ajuste conforme necessário
 
+
     # Buscando certificados da pessoa na categoria "Participação"
     certificados_participacao = fetch_certificados_participacao(cpf_usuario)
     categorias_participacao = [certificado['categoria'] for certificado in certificados_participacao]
