@@ -165,9 +165,9 @@
                                     <button class="btn btn-link text-secondary mb-0">
                                         Editar
                                     </button>
-                                    <button class="btn btn-link text-secondary mb-0">
-                                        Excluir
-                                  </button>
+                                    <button class="btn btn-link text-secondary mb-0" onclick="excluirCertificado({{ cert['id_certificado'] }})">
+                                      Excluir
+                                    </button>
                                 </td>
                             </tr>
                           {% endfor %}
@@ -288,6 +288,32 @@
       Scrollbar.init(document.querySelector('#sidenav-scrollbar'), options);
     }
   </script>
+  <script>
+    function excluirCertificado(certificadoId) {
+    if (confirm('Tem certeza que deseja excluir este certificado?')) {
+        fetch(`/delete_certificado/${certificadoId}`, {
+            method: 'POST',
+        })
+        .then(response => {
+            if (!response.ok) {
+                throw new Error('Erro na exclusão do certificado');
+            }
+            return response.json();
+        })
+        .then(data => {
+            alert(data.message);
+            // Recarregar a página ou atualizar a tabela
+            location.reload();
+        })
+        .catch(error => {
+            alert('Erro: ' + error.message);
+        });
+    }
+}
+
+  </script>
+  
+  
   <!-- Github buttons -->
   <script async defer src="https://buttons.github.io/buttons.js"></script>
   <!-- Control Center for Material Dashboard: parallax effects, scripts for the example pages etc -->

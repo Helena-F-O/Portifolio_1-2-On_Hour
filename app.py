@@ -1,17 +1,8 @@
-from flask import Flask, render_template
-from api.models import fetch_data
-from api.models import fetch_certificados
-from api.models import fetch_categorias
-from api.models import fetch_certificados_participacao
-from api.models import fetch_certificados_outros
-from api.models import gerar_pdf_certificados
-from flask import Flask, render_template, request, redirect, url_for, flash
+from flask import Flask, render_template, request, redirect, url_for, jsonify
+from api.models import fetch_data, fetch_certificados, fetch_categorias, fetch_certificados_participacao, fetch_certificados_outros, gerar_pdf_certificados, delete_certificado_by_id
 from api.models import get_db_connection
 from mysql.connector import Error
 from flask import send_file
-
-
-
 
 app = Flask(__name__, static_folder='assets', template_folder='pages')
 
@@ -68,7 +59,6 @@ def profile():
     # Renderizando o template com os dados do usuário
     return render_template('profile.html', usuario=usuario)
 
-
 @app.route('/regulamento')
 def regulamento():
     return render_template('regulamento.html')
@@ -78,7 +68,6 @@ def relatorio():
     data = fetch_certificados()
     print("Dados passados para o template:", data)  # Verificar os dados enviados ao template
     return render_template('relatorio.html', data=data)
-
 
 @app.route('/sign-in')
 def signin():
@@ -112,25 +101,36 @@ def add_certificado():
             try:
                 cursor = connection.cursor()
                 query = """
-                INSERT INTO certificados (certificado, horas, data_emissao, categoria_id, cpf_usuario)
+                INSERT INTO certificados (certificado, horas, data_emissao, categoria_id, usuario_cpf)
                 VALUES (%s, %s, %s, %s, %s)
                 """
                 cursor.execute(query, (nome_certificado, horas, data_emissao, categoria_id, '12345678900'))
                 connection.commit()
                 cursor.close()
                 connection.close()
-                flash('Certificado adicionado com sucesso!', 'success')
+                return jsonify({'message': 'Certificado adicionado com sucesso!', 'status': 'success'})
             except Error as e:
                 print(f"Erro ao inserir certificado: {e}")
-                flash('Erro ao adicionar o certificado.', 'danger')
+                return jsonify({'message': 'Erro ao adicionar o certificado.', 'status': 'danger'}), 500
         else:
-            flash('Falha ao conectar ao banco de dados.', 'danger')
-
-        return redirect(url_for('add_certificado'))
+            return jsonify({'message': 'Falha ao conectar ao banco de dados.', 'status': 'danger'}), 500
 
     # Buscar categorias do banco de dados
     categorias = fetch_categorias()
     return render_template('add_certificado.html', categorias=categorias)
+
+@app.route('/delete_certificado/<int:id_certificado>', methods=['POST'])
+def delete_certificado(id_certificado):
+    try:
+        result = delete_certificado_by_id(id_certificado)
+        if result:
+            return jsonify({"status": "success", "message": "Certificado excluído com sucesso."}), 200
+        else:
+            return jsonify({"status": "error", "message": "Certificado não encontrado."}), 404
+    except Exception as e:
+        print(f"Erro ao excluir o certificado: {e}")
+        return jsonify({"status": "error", "message": "Erro ao excluir certificado."}), 500
+
 
 @app.route('/download_certificados')
 def download_certificados():
@@ -138,7 +138,6 @@ def download_certificados():
     certificados = fetch_certificados()  # Função para buscar os certificados do banco
     pdf_buffer = gerar_pdf_certificados(certificados)
     return send_file(pdf_buffer, as_attachment=True, download_name='certificados.pdf', mimetype='application/pdf')
-
 
 if __name__ == '__main__':
     app.run(debug=True)

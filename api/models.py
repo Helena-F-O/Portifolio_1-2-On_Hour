@@ -14,7 +14,7 @@ def get_db_connection():
             user='root',
             password='1234',
             host='127.0.0.1',
-            database='onhour'
+            database='onhour1'
         )
         if connection.is_connected():
             print("Conexão com o banco de dados bem-sucedida")
@@ -47,7 +47,7 @@ def fetch_certificados():
         try:
             cursor = connection.cursor(dictionary=True)
             query = """
-            SELECT certificados.certificado, certificados.horas, categorias.categoria AS categoria
+            SELECT certificados.id_certificado, certificados.certificado, certificados.horas, categorias.categoria AS categoria
             FROM certificados
             JOIN categorias ON certificados.categoria_id = categorias.id_categoria
             """
@@ -105,6 +105,25 @@ def add_certificado(nome_certificado, horas, data_emissao, categoria_id, cpf_usu
         return True, None
     except Error as e:
         return False, str(e)
+
+def delete_certificado_by_id(id_certificado):
+    connection = get_db_connection()
+    if connection:
+        try:
+            cursor = connection.cursor()
+            query = "DELETE FROM certificados WHERE id_certificado = %s"
+            cursor.execute(query, (id_certificado,))
+            connection.commit()
+            cursor.close()
+            connection.close()
+            return cursor.rowcount > 0  # Retorna True se alguma linha foi afetada
+        except Error as e:
+            print(f"Erro ao excluir o certificado: {e}")
+            return False
+    else:
+        print("Falha ao conectar ao banco de dados")
+        return False
+
 
 def fetch_certificados_participacao(cpf_usuario):
     connection = get_db_connection()

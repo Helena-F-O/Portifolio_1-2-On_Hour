@@ -1,6 +1,6 @@
-CREATE DATABASE onHour;
+CREATE DATABASE onHour1;
 
-USE onHour;
+USE onHour1;
 
 CREATE TABLE usuarios(
     cpf NUMERIC(15, 0) NOT NULL PRIMARY KEY, 
@@ -11,13 +11,13 @@ CREATE TABLE usuarios(
 );
 
 CREATE TABLE categorias(
-    id_categoria INT NOT NULL PRIMARY KEY, 
+    id_categoria INT NOT NULL AUTO_INCREMENT PRIMARY KEY, 
     categoria VARCHAR(45) NOT NULL, 
     horas_maximas FLOAT NOT NULL
 );
 
 CREATE TABLE certificados(
-    id_certificado INT NOT NULL PRIMARY KEY,
+    id_certificado INT NOT NULL AUTO_INCREMENT PRIMARY KEY,
     certificado VARCHAR(45) NOT NULL,
     horas FLOAT NOT NULL,
     data_emissao DATE NOT NULL,

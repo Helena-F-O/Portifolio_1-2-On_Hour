@@ -192,6 +192,32 @@
       Scrollbar.init(document.querySelector('#sidenav-scrollbar'), options);
     }
   </script>
+
+<script>
+  document.querySelector('form').addEventListener('submit', function(event) {
+    event.preventDefault(); // Impede o comportamento padrão de envio do formulário
+
+    // Captura os dados do formulário
+    const formData = new FormData(this);
+
+    // Envia os dados via fetch
+    fetch(this.action, {
+      method: 'POST',
+      body: formData
+    })
+    .then(response => response.json())
+    .then(data => {
+      // Exibe o alerta com a mensagem de sucesso
+      alert(data.message);
+    })
+    .catch(error => {
+      // Caso ocorra algum erro
+      console.error('Erro:', error);
+      alert('Houve um erro ao inserir o certificado.');
+    });
+  });
+</script>
+
   <!-- Github buttons -->
   <script async defer src="https://buttons.github.io/buttons.js"></script>
   <!-- Control Center for Material Dashboard: parallax effects, scripts for the example pages etc -->
