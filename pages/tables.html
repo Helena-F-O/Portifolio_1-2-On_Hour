@@ -163,7 +163,9 @@
                                 </td>
                                 <td class="align-middle">
                                     <button class="btn btn-link text-secondary mb-0">
-                                        Editar
+                                      <a href="{{ url_for('edit_certificado', id_certificado=cert['id_certificado']) }}">
+                                          Editar
+                                      </a>
                                     </button>
                                     <button class="btn btn-link text-secondary mb-0" onclick="excluirCertificado({{ cert['id_certificado'] }})">
                                       Excluir
@@ -310,6 +312,35 @@
         });
     }
 }
+
+function editarCertificado(certificadoId) {
+    const certificado = document.getElementById(`certificado_${certificadoId}`).value;
+    const horas = document.getElementById(`horas_${certificadoId}`).value;
+    const categoriaId = document.getElementById(`categoria_id_${certificadoId}`).value;
+
+    const data = {
+        certificado: certificado,
+        horas: horas,
+        categoria_id: categoriaId
+    };
+
+    fetch(`/edit_certificado/${certificadoId}`, {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(data)
+    })
+    .then(response => response.json())
+    .then(data => {
+        alert(data.message);
+        if (data.message === "Certificado atualizado com sucesso!") {
+            location.reload();
+        }
+    })
+    .catch(error => console.error('Erro:', error));
+}
+
 
   </script>
   
