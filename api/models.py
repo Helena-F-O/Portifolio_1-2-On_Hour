@@ -124,6 +124,37 @@ def delete_certificado_by_id(id_certificado):
         print("Falha ao conectar ao banco de dados")
         return False
 
+def update_certificado(id_certificado, certificado, horas, data_emissao, categoria):
+    # Exemplo de código SQL corrigido
+    query = """UPDATE certificados 
+               SET certificado = %s, horas = %s, data_emissao = %s, categoria_id = %s 
+               WHERE id_certificado = %s"""
+    params = (certificado, horas, data_emissao, categoria, id_certificado)
+    # Execute a query no banco de dados
+    execute_query(query, params)
+
+
+def get_certificado_by_id(id_certificado):
+    connection = get_db_connection()
+    if connection:
+        try:
+            cursor = connection.cursor(dictionary=True)
+            query = """
+            SELECT id_certificado, certificado, horas, data_emissao, categoria_id 
+            FROM certificados
+            WHERE id_certificado = %s
+            """
+            cursor.execute(query, (id_certificado,))
+            certificado = cursor.fetchone()  # Recupera apenas um resultado, já que estamos buscando pelo ID
+            cursor.close()
+            connection.close()
+            return certificado
+        except Error as e:
+            print(f"Erro ao executar a consulta: {e}")
+    else:
+        print("Falha ao conectar ao banco de dados")
+    return None
+
 
 def fetch_certificados_participacao(cpf_usuario):
     connection = get_db_connection()

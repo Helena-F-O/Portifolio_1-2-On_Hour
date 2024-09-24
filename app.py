@@ -1,5 +1,6 @@
 from flask import Flask, render_template, request, redirect, url_for, jsonify
 from api.models import fetch_data, fetch_certificados, fetch_categorias, fetch_certificados_participacao, fetch_certificados_outros, gerar_pdf_certificados, delete_certificado_by_id
+from api.models import get_certificado_by_id, update_certificado
 from api.models import get_db_connection
 from mysql.connector import Error
 from flask import send_file
@@ -131,6 +132,17 @@ def delete_certificado(id_certificado):
     except Exception as e:
         print(f"Erro ao excluir o certificado: {e}")
         return jsonify({"status": "error", "message": "Erro ao excluir certificado."}), 500
+
+@app.route('/edit_certificado/<int:id_certificado>', methods=['GET'])
+def edit_certificado(id_certificado):
+    certificado = get_certificado_by_id(id_certificado)
+    if certificado:
+        return render_template('edit_certificado.html', certificado=certificado)
+    else:
+        # Redirecionar para a lista de certificados caso o id não seja encontrado
+        certificados_data = fetch_certificados()
+        categorias_data = fetch_categorias()
+        return render_template('tables.html', certificados=certificados_data, categorias=categorias_data)
 
 
 @app.route('/download_certificados')
