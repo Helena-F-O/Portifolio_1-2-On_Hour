@@ -1,9 +1,12 @@
-from flask import Flask, render_template, request, redirect, url_for, jsonify
-from api.models import fetch_data, fetch_certificados, fetch_categorias, fetch_certificados_participacao, fetch_certificados_outros, gerar_pdf_certificados, delete_certificado_by_id
+from flask import Flask, render_template, request, jsonify
+from api.models import fetch_data, fetch_certificados, fetch_categorias
 from api.models import get_certificado_by_id, update_certificado
+from api.models import gerar_pdf_certificados, delete_certificado_by_id
+from api.models import fetch_certificados_participacao, fetch_certificados_outros
 from api.models import get_db_connection
 from mysql.connector import Error
 from flask import send_file
+
 
 app = Flask(__name__, static_folder='assets', template_folder='pages')
 
