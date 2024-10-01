@@ -209,7 +209,6 @@ def gerar_pdf_certificados(certificados):
     from reportlab.lib import colors
     from reportlab.lib.styles import getSampleStyleSheet, ParagraphStyle
     from reportlab.lib.units import cm
-    
 
     buffer = BytesIO()
     doc = SimpleDocTemplate(buffer, pagesize=letter)
@@ -230,30 +229,27 @@ def gerar_pdf_certificados(certificados):
         ['IDENTIFICAÇÃO DO ACADÊMICO (A)', '', '', ''],
         ['Nome:', '', 'Fase:', 'Matrícula:']
     ]
-    table_identificacao = Table(data_identificacao, colWidths=[4*cm, 8*cm, 2*cm, 4*cm])  # Ajuste do campo de "Nome"
+    table_identificacao = Table(data_identificacao, colWidths=[4*cm, 8*cm, 2*cm, 4*cm])
     table_identificacao.setStyle(TableStyle([
         ('SPAN', (0, 0), (3, 0)),
         ('BOX', (0, 0), (-1, -1), 1, colors.black),
         ('INNERGRID', (0, 0), (-1, -1), 0.5, colors.black),
-        ('FONT', (0, 0), (-1, -1), 'Helvetica', 6),  # Fonte menor para a tabela
-        ('BOTTOMPADDING', (0, 0), (-1, -1), 2),  # Reduzindo o padding vertical
+        ('FONT', (0, 0), (-1, -1), 'Helvetica', 6),
+        ('BOTTOMPADDING', (0, 0), (-1, -1), 2),
         ('TOPPADDING', (0, 0), (-1, -1), 2),
     ]))
     elements.append(table_identificacao)
 
-    # Cabeçalho da tabela de atividades com nova organização e adição de "Para Uso da Instituição"
+    # Cabeçalho da tabela de atividades
     data_header = [
-        ['Dados Certificados', 'Para Uso da Instituição', '', '', '', ''],  # Primeira linha de cabeçalho
-        ['Nº', 'Atividade', 'Ano de Realização', 'Carga Horária', 'Deferido', 'Carga Horária Validada', 'Observações']  # Segunda linha de cabeçalho
+        ['Dados Certificados', 'Para Uso da Instituição', '', '', '', ''],
+        ['Nº', 'Atividade', 'Ano de Realização', 'Carga Horária', 'Deferido', 'Carga Horária Validada', 'Observações']
     ]
     
     # Linhas de atividades com nome da categoria
     data_atividades = []
     for i, cert in enumerate(certificados, start=1):
-        # Definindo o ano da data de emissão
         ano_realizacao = cert.get('data_emissao', 'N/A').split('-')[0]  # Pega apenas o ano da data
-        
-        # Adiciona os dados à linha da tabela
         data_atividades.append([
             str(i),
             cert.get('certificado', 'N/A'),
@@ -266,22 +262,20 @@ def gerar_pdf_certificados(certificados):
     for i in range(len(certificados) + 1, 16):
         data_atividades.append([str(i), '', '', '', '', '', ''])
 
-    # Junta cabeçalho e atividades
     data_final = data_header + data_atividades
 
-    # Ajuste das colunas para reduzir espaço desnecessário
     table_atividades = Table(data_final, colWidths=[1*cm, 5*cm, 2*cm, 2*cm, 2*cm, 3*cm, 3*cm])
     table_atividades.setStyle(TableStyle([
         ('BOX', (0, 0), (-1, -1), 1, colors.black),
         ('INNERGRID', (0, 0), (-1, -1), 0.5, colors.black),
-        ('SPAN', (0, 0), (3, 0)),  # Mescla as primeiras 4 colunas na primeira linha
-        ('SPAN', (4, 0), (6, 0)),  # Mescla as últimas 3 colunas na primeira linha
+        ('SPAN', (0, 0), (3, 0)),
+        ('SPAN', (4, 0), (6, 0)),
         ('ALIGN', (0, 0), (-1, -1), 'CENTER'),
         ('VALIGN', (0, 0), (-1, -1), 'MIDDLE'),
-        ('FONT', (0, 0), (-1, -1), 'Helvetica', 6),  # Fonte menor para a tabela
-        ('BOTTOMPADDING', (0, 0), (-1, -1), 2),  # Reduz o padding para deixar mais compacto
+        ('FONT', (0, 0), (-1, -1), 'Helvetica', 6),
+        ('BOTTOMPADDING', (0, 0), (-1, -1), 2),
         ('TOPPADDING', (0, 0), (-1, -1), 2),
-        ('LEFTPADDING', (0, 0), (-1, -1), 2),  # Reduz o padding lateral
+        ('LEFTPADDING', (0, 0), (-1, -1), 2),
         ('RIGHTPADDING', (0, 0), (-1, -1), 2),
     ]))
     elements.append(table_atividades)
@@ -295,13 +289,12 @@ def gerar_pdf_certificados(certificados):
     table_assinatura.setStyle(TableStyle([
         ('BOX', (0, 0), (-1, -1), 1, colors.black),
         ('INNERGRID', (0, 0), (-1, -1), 0.5, colors.black),
-        ('FONT', (0, 0), (-1, -1), 'Helvetica', 6),  # Fonte menor para a tabela de assinaturas
-        ('BOTTOMPADDING', (0, 0), (-1, -1), 2),  # Padding reduzido
+        ('FONT', (0, 0), (-1, -1), 'Helvetica', 6),
+        ('BOTTOMPADDING', (0, 0), (-1, -1), 2),
         ('TOPPADDING', (0, 0), (-1, -1), 2),
     ]))
     elements.append(table_assinatura)
 
-    # Gera o documento PDF
     doc.build(elements)
     buffer.seek(0)
     return buffer
