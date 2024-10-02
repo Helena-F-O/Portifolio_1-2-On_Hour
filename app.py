@@ -2,7 +2,8 @@ from flask import Flask, render_template, request, jsonify
 from api.models import fetch_data, fetch_certificados, fetch_categorias
 from api.models import get_certificado_by_id, update_certificado
 from api.models import gerar_pdf_certificados, delete_certificado_by_id
-from api.models import fetch_certificados_participacao, fetch_certificados_outros
+from api.models import fetch_certificados_participacao
+from api.models import fetch_certificados_outros
 from api.models import get_db_connection
 from mysql.connector import Error
 from flask import send_file
@@ -10,19 +11,19 @@ from flask import send_file
 
 app = Flask(__name__, static_folder='assets', template_folder='pages')
 
+
 @app.route('/')
 def index():
     usuario_data = fetch_data()
     certificados_data = fetch_certificados()  # Dados gerais de certificados
     categorias_data = fetch_categorias()  # Dados das categorias
-    
+
     if usuario_data:
         usuario = usuario_data[0]
-        cpf_usuario = usuario.get('cpf', '12345678900')  # Ajuste conforme necessário
+        cpf_usuario = usuario.get('cpf', '12345678900') 
     else:
         usuario = {}
-        cpf_usuario = '12345678900'  # Valor padrão ou ajuste conforme necessário
-
+        cpf_usuario = '12345678900'  
 
     # Buscando certificados da pessoa na categoria "Participação"
     certificados_participacao = fetch_certificados_participacao(cpf_usuario)
@@ -50,6 +51,7 @@ def index():
 
     return render_template('index.html', usuario=usuario, certificados=certificados_data, categorias=categorias_data, categorias_participacao=categorias_participacao, horas_participacao=horas_participacao, categorias_outros=categorias_outros, horas_outros=horas_outros)
 
+
 @app.route('/profile')
 def profile():
     # Buscando os dados do banco usando as funções do models.py
@@ -64,9 +66,11 @@ def profile():
     # Renderizando o template com os dados do usuário
     return render_template('profile.html', usuario=usuario)
 
+
 @app.route('/regulamento')
 def regulamento():
     return render_template('regulamento.html')
+
 
 @app.route('/relatorio')
 def relatorio():
@@ -74,13 +78,16 @@ def relatorio():
     print("Dados passados para o template:", data)  # Verificar os dados enviados ao template
     return render_template('relatorio.html', data=data)
 
+
 @app.route('/sign-in')
 def signin():
     return render_template('sign-in.html')
 
+
 @app.route('/sign-up')
 def signup():
     return render_template('sign-up.html')
+
 
 @app.route('/tables')
 def tables():
@@ -88,9 +95,11 @@ def tables():
     categorias_data = fetch_categorias()
     return render_template('tables.html', certificados=certificados_data, categorias=categorias_data)
 
+
 @app.route('/notifications')
 def notifications():
     return render_template('notifications.html')
+
 
 @app.route('/add_certificado', methods=['GET', 'POST'])
 def add_certificado():
@@ -124,6 +133,7 @@ def add_certificado():
     categorias = fetch_categorias()
     return render_template('add_certificado.html', categorias=categorias)
 
+
 @app.route('/delete_certificado/<int:id_certificado>', methods=['POST'])
 def delete_certificado(id_certificado):
     try:
@@ -135,6 +145,7 @@ def delete_certificado(id_certificado):
     except Exception as e:
         print(f"Erro ao excluir o certificado: {e}")
         return jsonify({"status": "error", "message": "Erro ao excluir certificado."}), 500
+
 
 @app.route('/edit_certificado/<int:id_certificado>', methods=['GET'])
 def edit_certificado(id_certificado):

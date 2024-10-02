@@ -1,0 +1,16 @@
+Comandos uteis para o projeto
+
+pip install -r requirements.txt
+pip install flask_sqlalchemy
+pip install pytest
+pip install reportlab
+pip install pytest flask pytest-flask
+
+deactivate
+python -m venv venv
+.\venv\Scripts\activate
+
+coverage run -m pytest
+coverage report
+coverage html
+

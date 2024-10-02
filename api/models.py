@@ -14,7 +14,7 @@ def get_db_connection():
             user='root',
             password='1234',
             host='127.0.0.1',
-            database='onhour1'
+            database='onhour'
         )
         if connection.is_connected():
             print("Conexão com o banco de dados bem-sucedida")
