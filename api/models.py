@@ -134,6 +134,33 @@ def update_certificado(id_certificado, certificado, horas, data_emissao, categor
     execute_query(query, params)
 
 
+def get_certificados_by_cpf(cpf):
+    # Exemplo de conexão com o banco de dados
+    conn = mysql.connector.connect(
+        host="localhost",
+        user="your_user",
+        password="your_password",
+        database="your_database"
+    )
+    cursor = conn.cursor(dictionary=True)
+    
+    # Realizar a consulta no banco
+    query = """
+        SELECT c.certificado, c.horas, ct.tipo, c.id_certificado
+        FROM certificados c
+        JOIN categorias ct ON c.categoria_id = ct.id
+        WHERE c.cpf = %s
+    """
+    
+    cursor.execute(query, (cpf,))
+    resultados = cursor.fetchall()
+    
+    cursor.close()
+    conn.close()
+    
+    return resultados
+
+
 def get_certificado_by_id(id_certificado):
     connection = get_db_connection()
     if connection:

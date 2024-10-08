@@ -96,6 +96,30 @@ def tables():
     return render_template('tables.html', certificados=certificados_data, categorias=categorias_data)
 
 
+@app.route('/consulta_cpf')
+def consulta_cpf():
+    # Pegar o CPF da requisição
+    cpf = request.args.get('cpf')
+    
+    # Validar se o CPF foi fornecido
+    if not cpf:
+        return jsonify({"error": "CPF não fornecido"}), 400
+    
+    try:
+        # Chamar a função que busca os certificados no banco de dados
+        certificados = get_certificados_by_cpf(cpf)
+        
+        # Se não encontrar nenhum certificado, retornar uma mensagem
+        if not certificados:
+            return jsonify({"message": "Nenhum certificado encontrado"}), 404
+        
+        # Retornar os certificados encontrados
+        return render_template('consulta_cpf.html.html', certificados=certificados)
+    
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
+
+
 @app.route('/notifications')
 def notifications():
     return render_template('notifications.html')
