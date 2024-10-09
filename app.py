@@ -95,29 +95,22 @@ def tables():
     categorias_data = fetch_categorias()
     return render_template('tables.html', certificados=certificados_data, categorias=categorias_data)
 
+@app.route('/pesquisar_certificados', methods=['GET', 'POST'])
+def pesquisar_certificados():
+    certificados = []
+    if request.method == 'POST':
+        cpf = request.form['cpf']
+        conn = get_db_connection()
+        cursor = conn.cursor(dictionary=True)
 
-@app.route('/consulta_cpf')
-def consulta_cpf():
-    # Pegar o CPF da requisição
-    cpf = request.args.get('cpf')
+        # Consulta para buscar certificados pelo CPF
+        cursor.execute("SELECT * FROM certificados JOIN categorias ON certificados.categoria_id = categorias.id_categoria WHERE usuario_cpf = %s", (cpf,))
+        certificados = cursor.fetchall()
+
+        cursor.close()
+        conn.close()
     
-    # Validar se o CPF foi fornecido
-    if not cpf:
-        return jsonify({"error": "CPF não fornecido"}), 400
-    
-    try:
-        # Chamar a função que busca os certificados no banco de dados
-        certificados = get_certificados_by_cpf(cpf)
-        
-        # Se não encontrar nenhum certificado, retornar uma mensagem
-        if not certificados:
-            return jsonify({"message": "Nenhum certificado encontrado"}), 404
-        
-        # Retornar os certificados encontrados
-        return render_template('consulta_cpf.html.html', certificados=certificados)
-    
-    except Exception as e:
-        return jsonify({"error": str(e)}), 500
+    return render_template('pesquisar_certificados.html', certificados=certificados)
 
 
 @app.route('/notifications')

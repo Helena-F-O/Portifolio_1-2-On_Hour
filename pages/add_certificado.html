@@ -70,13 +70,14 @@
           </a>
         </li>
         <li class="nav-item">
-          <a class="nav-link text-white " href="{{ url_for('notifications') }}">
+          <a class="nav-link text-white" href="{{ url_for('pesquisar_certificados') }}">
             <div class="text-white text-center me-2 d-flex align-items-center justify-content-center">
-              <i class="material-icons opacity-10">notifications</i>
+              <i class="material-icons opacity-10">search</i>  <!-- Ícone de lupa -->
             </div>
-            <span class="nav-link-text ms-1">Notifications</span>
+            <span class="nav-link-text ms-1">Consultar CPF</span>
           </a>
-        </li>
+        </li>        
+        
         <li class="nav-item mt-3">
           <h6 class="ps-4 ms-2 text-uppercase text-xs text-white font-weight-bolder opacity-8">Account pages</h6>
         </li>
@@ -131,19 +132,16 @@
               </div>
             </div>
             <div class="card-body px-0 pb-2">
-              <div class="table-responsive p-0">
-                  <form role="form" class="text-start" method="POST" action="{{ url_for('add_certificado') }}">
+              <div class="d-flex justify-content-center align-items-center mt-3">
+                  <form role="form" class="w-30 my-4 mb-2" method="POST" action="{{ url_for('add_certificado') }}">
                       <div class="input-group input-group-outline my-3">
-                          <label class="form-label">Nome do Certificado</label>
-                          <input type="text" name="nome_certificado" class="form-control">
+                          <input type="text" name="nome_certificado" class="form-control" placeholder="Nome Certificado" required>
                       </div>
                       <div class="input-group input-group-outline mb-3">
-                          <label class="form-label">Horas</label>
-                          <input type="number" name="horas" class="form-control">
+                          <input type="number" name="horas" class="form-control" placeholder="Horas" required>
                       </div>
                       <div class="input-group input-group-outline mb-3">
-                          <label class="form-label">Data da Emissão</label>
-                          <input type="date" name="data_emissao" class="form-control">
+                          <input type="date" name="data_emissao" class="form-control" placeholder="Data da Emissão" required>
                       </div>
                       <div class="input-group input-group-outline mb-3">
                           <label class="form-label">Categoria</label>
@@ -153,8 +151,8 @@
                               {% endfor %}
                           </select>
                       </div>
-                      <div class="text-center">
-                          <button type="submit" class="btn bg-gradient-primary w-100 my-4 mb-2">Adicionar Certificado</button>
+                      <div class="d-flex justify-content-center align-items-center mt-3">
+                          <button type="submit" class="btn bg-gradient-primary w-100">Adicionar Certificado</button>
                       </div>
                   </form>
               </div>
