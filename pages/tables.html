@@ -169,7 +169,9 @@
                                       </a>
                                     </button>
                                     <button class="btn btn-link text-secondary mb-0" onclick="excluirCertificado({{ cert['id_certificado'] }})">
-                                      Excluir
+                                      <a href="#">
+                                        Excluir
+                                      </a>
                                     </button>
                                 </td>
                             </tr>
@@ -184,6 +186,11 @@
               </div>
             </div>
           </div>
+          <div class="col-lg-3 col-sm-6 col-12 mb-4">
+            <a class="nav-link text-white " href="{{ url_for('add_certificado') }}">
+              <button class="btn bg-gradient-primary w-100 mb-0 toast-btn" type="button" data-target="successToast">Adicionar Certificado</button>
+            </a>
+          </div>         
         </div>
       </div>
       <div class="row">

@@ -139,7 +139,6 @@
                           <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">Certificado</th>
                           <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 ps-2">Horas</th>
                           <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 ps-2">Tipo</th>
-                          <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 ps-2">Opções</th>
                       </tr>
                   </thead>
                   <tbody>
@@ -162,14 +161,6 @@
                                 <td>
                                     <span class="text-xs font-weight-bold">{{ row['categoria'] }}</span>
                                 </td>
-                                <td class="align-middle">
-                                    <button class="btn btn-link text-secondary mb-0">
-                                        Editar
-                                    </button>
-                                    <button class="btn btn-link text-secondary mb-0">
-                                        Excluir
-                                  </button>
-                                </td>
                             </tr>
                         {% endfor %}
                     {% else %}
@@ -181,11 +172,6 @@
               </table>
               </div>
             </div>
-          </div>
-          <div class="col-lg-3 col-sm-6 col-12">
-            <a class="nav-link text-white " href="{{ url_for('add_certificado') }}">
-              <button class="btn bg-gradient-primary w-100 mb-0 toast-btn" type="button" data-target="successToast">Adicionar Certificado</button>
-            </a>
           </div>
           <div class="col-lg-3 col-sm-6 col-12">
           <a href="/download_certificados">
