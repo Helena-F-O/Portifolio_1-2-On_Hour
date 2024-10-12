@@ -225,7 +225,7 @@
               </div>
             </div>
             <div class="card-body">
-              <h6 class="mb-0 "> Grupo de Categorias 2 </h6>
+              <h6 class="mb-0 "> Horas Categorias Gerais </h6>
               <p class="text-sm "> Agrupamento das horas de certificados </p>
               <hr class="dark horizontal">
               <div class="d-flex ">
@@ -339,167 +339,183 @@
     });
 
 
-    var ctx2 = document.getElementById("chart-line").getContext("2d");
+    function generateSiglas(categorias) {
+  return categorias.map(categoria => categoria.substring(0, 3).toUpperCase());
+}
 
-        new Chart(ctx2, {
-          type: "line",
-          data: {
-            labels: {{ categorias_participacao|tojson }},
-            datasets: [{
-              label: "Horas de Participação",
-              tension: 0,
-              borderWidth: 0,
-              pointRadius: 5,
-              pointBackgroundColor: "rgba(255, 255, 255, .8)",
-              pointBorderColor: "transparent",
-              borderColor: "rgba(255, 255, 255, .8)",
-              borderWidth: 4,
-              backgroundColor: "transparent",
-              fill: true,
-              data: {{ horas_participacao|tojson }},
-              maxBarThickness: 6
-            }],
+var ctx2 = document.getElementById("chart-line").getContext("2d");
+
+// Gerando siglas a partir dos nomes das categorias
+var categoriasSiglas = generateSiglas({{ categorias_participacao|tojson }});
+
+new Chart(ctx2, {
+  type: "line",
+  data: {
+    labels: categoriasSiglas, // Usando as siglas geradas aqui
+    datasets: [{
+      label: "Horas em Participação",
+      tension: 0,
+      borderWidth: 0,
+      pointRadius: 5,
+      pointBackgroundColor: "rgba(255, 255, 255, .8)",
+      pointBorderColor: "transparent",
+      borderColor: "rgba(255, 255, 255, .8)",
+      borderWidth: 4,
+      backgroundColor: "transparent",
+      fill: true,
+      data: {{ horas_participacao|tojson }},
+      maxBarThickness: 6
+    }],
+  },
+  options: {
+    responsive: true,
+    maintainAspectRatio: false,
+    plugins: {
+      legend: {
+        display: false,
+      }
+    },
+    interaction: {
+      intersect: false,
+      mode: 'index',
+    },
+    scales: {
+      y: {
+        grid: {
+          drawBorder: false,
+          display: true,
+          drawOnChartArea: true,
+          drawTicks: false,
+          borderDash: [5, 5],
+          color: 'rgba(255, 255, 255, .2)'
+        },
+        ticks: {
+          display: true,
+          color: '#f8f9fa',
+          padding: 10,
+          font: {
+            size: 14,
+            weight: 300,
+            family: "Roboto",
+            style: 'normal',
+            lineHeight: 2
           },
-          options: {
-            responsive: true,
-            maintainAspectRatio: false,
-            plugins: {
-              legend: {
-                display: false,
-              }
-            },
-            interaction: {
-              intersect: false,
-              mode: 'index',
-            },
-            scales: {
-              y: {
-                grid: {
-                  drawBorder: false,
-                  display: true,
-                  drawOnChartArea: true,
-                  drawTicks: false,
-                  borderDash: [5, 5],
-                  color: 'rgba(255, 255, 255, .2)'
-                },
-                ticks: {
-                  display: true,
-                  color: '#f8f9fa',
-                  padding: 10,
-                  font: {
-                    size: 14,
-                    weight: 300,
-                    family: "Roboto",
-                    style: 'normal',
-                    lineHeight: 2
-                  },
-                }
-              },
-              x: {
-                grid: {
-                  drawBorder: false,
-                  display: false,
-                  drawOnChartArea: false,
-                  drawTicks: false,
-                  borderDash: [5, 5]
-                },
-                ticks: {
-                  display: true,
-                  color: '#f8f9fa',
-                  padding: 10,
-                  font: {
-                    size: 14,
-                    weight: 300,
-                    family: "Roboto",
-                    style: 'normal',
-                    lineHeight: 2
-                  },
-                }
-              },
-            },
-          },
-        });
-
-    var ctx3 = document.getElementById("chart-line-tasks").getContext("2d");
-
-    new Chart(ctx3, {
-      type: "line",
-      data: {
-        labels: {{ categorias_outros|tojson }},
-          datasets: [{
-            label: "Horas em Outras Categorias",
-            tension: 0,
-            borderWidth: 0,
-            pointRadius: 5,
-            pointBackgroundColor: "rgba(255, 255, 255, .8)",
-            pointBorderColor: "transparent",
-            borderColor: "rgba(255, 255, 255, .8)",
-            borderWidth: 4,
-            backgroundColor: "transparent",
-            fill: true,
-            data: {{ horas_outros|tojson }},
-            maxBarThickness: 6
-        }],
+        }
       },
-      options: {
-        responsive: true,
-        maintainAspectRatio: false,
-        plugins: {
-          legend: {
-            display: false,
-          }
+      x: {
+        grid: {
+          drawBorder: false,
+          display: false,
+          drawOnChartArea: false,
+          drawTicks: false,
+          borderDash: [5, 5]
         },
-        interaction: {
-          intersect: false,
-          mode: 'index',
-        },
-        scales: {
-          y: {
-            grid: {
-              drawBorder: false,
-              display: true,
-              drawOnChartArea: true,
-              drawTicks: false,
-              borderDash: [5, 5],
-              color: 'rgba(255, 255, 255, .2)'
-            },
-            ticks: {
-              display: true,
-              padding: 10,
-              color: '#f8f9fa',
-              font: {
-                size: 14,
-                weight: 300,
-                family: "Roboto",
-                style: 'normal',
-                lineHeight: 2
-              },
-            }
+        ticks: {
+          display: true,
+          color: '#f8f9fa',
+          padding: 10,
+          font: {
+            size: 14,
+            weight: 300,
+            family: "Roboto",
+            style: 'normal',
+            lineHeight: 2
           },
-          x: {
-            grid: {
-              drawBorder: false,
-              display: false,
-              drawOnChartArea: false,
-              drawTicks: false,
-              borderDash: [5, 5]
-            },
-            ticks: {
-              display: true,
-              color: '#f8f9fa',
-              padding: 10,
-              font: {
-                size: 14,
-                weight: 300,
-                family: "Roboto",
-                style: 'normal',
-                lineHeight: 2
-              },
-            }
-          },
-        },
+        }
       },
-    });
+    },
+  },
+});
+
+    // Função para gerar siglas com as primeiras 3 letras de cada categoria
+function generateSiglas(categorias) {
+  return categorias.map(categoria => categoria.substring(0, 3).toUpperCase());
+}
+
+var ctx3 = document.getElementById("chart-line-tasks").getContext("2d");
+
+// Gerando siglas a partir dos nomes das categorias
+var categoriasSiglas = generateSiglas({{ categorias_outros|tojson }});
+
+new Chart(ctx3, {
+  type: "line",
+  data: {
+    labels: categoriasSiglas, // Usando as siglas geradas aqui
+    datasets: [{
+      label: "Horas em Outras Categorias",
+      tension: 0,
+      borderWidth: 0,
+      pointRadius: 5,
+      pointBackgroundColor: "rgba(255, 255, 255, .8)",
+      pointBorderColor: "transparent",
+      borderColor: "rgba(255, 255, 255, .8)",
+      borderWidth: 4,
+      backgroundColor: "transparent",
+      fill: true,
+      data: {{ horas_outros|tojson }},
+      maxBarThickness: 6
+    }],
+  },
+  options: {
+    responsive: true,
+    maintainAspectRatio: false,
+    plugins: {
+      legend: {
+        display: false,
+      }
+    },
+    interaction: {
+      intersect: false,
+      mode: 'index',
+    },
+    scales: {
+      y: {
+        grid: {
+          drawBorder: false,
+          display: true,
+          drawOnChartArea: true,
+          drawTicks: false,
+          borderDash: [5, 5],
+          color: 'rgba(255, 255, 255, .2)'
+        },
+        ticks: {
+          display: true,
+          padding: 10,
+          color: '#f8f9fa',
+          font: {
+            size: 14,
+            weight: 300,
+            family: "Roboto",
+            style: 'normal',
+            lineHeight: 2
+          },
+        }
+      },
+      x: {
+        grid: {
+          drawBorder: false,
+          display: false,
+          drawOnChartArea: false,
+          drawTicks: false,
+          borderDash: [5, 5]
+        },
+        ticks: {
+          display: true,
+          color: '#f8f9fa',
+          padding: 10,
+          font: {
+            size: 14,
+            weight: 300,
+            family: "Roboto",
+            style: 'normal',
+            lineHeight: 2
+          },
+        }
+      },
+    },
+  },
+});
+
   </script>
   <script>
     var win = navigator.platform.indexOf('Win') > -1;

@@ -14,7 +14,7 @@ def get_db_connection():
             user='root',
             password='1234',
             host='127.0.0.1',
-            database='onhour'
+            database='onhour1'
         )
         if connection.is_connected():
             print("Conexão com o banco de dados bem-sucedida")
@@ -140,12 +140,18 @@ def get_certificado_by_id(id_certificado):
         try:
             cursor = connection.cursor(dictionary=True)
             query = """
-            SELECT id_certificado, certificado, horas, data_emissao, categoria_id 
+            SELECT certificados.id_certificado, 
+                   certificados.certificado, 
+                   certificados.horas, 
+                   certificados.data_emissao, 
+                   certificados.categoria_id, 
+                   categorias.categoria AS categoria_nome
             FROM certificados
+            JOIN categorias ON certificados.categoria_id = categorias.id_categoria
             WHERE id_certificado = %s
             """
             cursor.execute(query, (id_certificado,))
-            certificado = cursor.fetchone()  # Recupera apenas um resultado, já que estamos buscando pelo ID
+            certificado = cursor.fetchone()  # Recupera apenas um resultado
             cursor.close()
             connection.close()
             return certificado
@@ -154,6 +160,7 @@ def get_certificado_by_id(id_certificado):
     else:
         print("Falha ao conectar ao banco de dados")
     return None
+
 
 
 def fetch_certificados_participacao(cpf_usuario):

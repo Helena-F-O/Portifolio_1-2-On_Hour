@@ -164,16 +164,39 @@ def delete_certificado(id_certificado):
         return jsonify({"status": "error", "message": "Erro ao excluir certificado."}), 500
 
 
-@app.route('/edit_certificado/<int:id_certificado>', methods=['GET'])
+@app.route('/edit_certificado/<int:id_certificado>', methods=['GET', 'POST'])
 def edit_certificado(id_certificado):
+    if request.method == 'POST':
+        nome_certificado = request.form['nome_certificado']
+        horas = request.form['horas']
+        data_emissao = request.form['data_emissao']
+        categoria_id = request.form['categoria']
+
+        # Atualizando o certificado no banco de dados
+        connection = get_db_connection()
+        if connection:
+            try:
+                cursor = connection.cursor()
+                query = """
+                UPDATE certificados
+                SET certificado = %s, horas = %s, data_emissao = %s, categoria_id = %s
+                WHERE id_certificado = %s
+                """
+                cursor.execute(query, (nome_certificado, horas, data_emissao, categoria_id, id_certificado))
+                connection.commit()
+                cursor.close()
+                connection.close()
+                return jsonify({'message': 'Certificado atualizado com sucesso!', 'status': 'success'})
+            except Error as e:
+                print(f"Erro ao atualizar certificado: {e}")
+                return jsonify({'message': 'Erro ao atualizar o certificado.', 'status': 'danger'}), 500
+        else:
+            return jsonify({'message': 'Falha ao conectar ao banco de dados.', 'status': 'danger'}), 500
+
+    # Buscar o certificado pelo ID e as categorias para exibição
     certificado = get_certificado_by_id(id_certificado)
-    if certificado:
-        return render_template('edit_certificado.html', certificado=certificado)
-    else:
-        # Redirecionar para a lista de certificados caso o id não seja encontrado
-        certificados_data = fetch_certificados()
-        categorias_data = fetch_categorias()
-        return render_template('tables.html', certificados=certificados_data, categorias=categorias_data)
+    categorias = fetch_categorias()
+    return render_template('edit_certificado.html', certificado=certificado, categorias=categorias)
 
 
 @app.route('/download_certificados')

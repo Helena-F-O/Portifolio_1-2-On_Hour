@@ -1,6 +1,6 @@
-CREATE DATABASE onHour;
+CREATE DATABASE onhour1;
 
-USE onHour;
+USE onhour1;
 
 CREATE TABLE usuarios(
     cpf NUMERIC(15, 0) NOT NULL PRIMARY KEY, 
