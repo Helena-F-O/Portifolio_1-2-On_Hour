@@ -4,15 +4,50 @@ from api.models import get_certificado_by_id, update_certificado
 from api.models import gerar_pdf_certificados, delete_certificado_by_id
 from api.models import fetch_certificados_participacao
 from api.models import fetch_certificados_outros
+from api.models import verificar_usuario, login_required, usuario_logado
 from api.models import get_db_connection
 from mysql.connector import Error
 from flask import send_file
+import bcrypt
+from flask import redirect, url_for, session
+from functools import wraps
+from flask import session, redirect, url_for
+import bcrypt
+
 
 
 app = Flask(__name__, static_folder='assets', template_folder='pages')
 
+# Variável de controle de login global
+usuario_logado = False
+
+
+# Rota de login
+@app.route('/login', methods=['GET', 'POST'])
+def login():
+    global usuario_logado
+    if request.method == 'POST':
+        username = request.form['username']
+        password = request.form['password']
+        
+        if verificar_usuario(username, password):
+            usuario_logado = True  # Marca o usuário como logado
+            return redirect(url_for('index'))  # Redireciona para a página inicial
+        else:
+            return "Credenciais inválidas", 401
+
+    return render_template('sign-in.html')
+
+# Rota de logout
+@app.route('/logout')
+def logout():
+    global usuario_logado
+    usuario_logado = False  # Desloga o usuário
+    return redirect(url_for('login'))
+
 
 @app.route('/')
+@login_required
 def index():
     usuario_data = fetch_data()
     certificados_data = fetch_certificados()  # Dados gerais de certificados
@@ -53,6 +88,7 @@ def index():
 
 
 @app.route('/profile')
+@login_required
 def profile():
     # Buscando os dados do banco usando as funções do models.py
     usuario_data = fetch_data()  # Retorna uma lista de dicionários
@@ -68,11 +104,13 @@ def profile():
 
 
 @app.route('/regulamento')
+@login_required
 def regulamento():
     return render_template('regulamento.html')
 
 
 @app.route('/relatorio')
+@login_required
 def relatorio():
     data = fetch_certificados()
     print("Dados passados para o template:", data)  # Verificar os dados enviados ao template
@@ -80,22 +118,26 @@ def relatorio():
 
 
 @app.route('/sign-in')
+@login_required
 def signin():
     return render_template('sign-in.html')
 
 
 @app.route('/sign-up')
+@login_required
 def signup():
     return render_template('sign-up.html')
 
 
 @app.route('/tables')
+@login_required
 def tables():
     certificados_data = fetch_certificados()
     categorias_data = fetch_categorias()
     return render_template('tables.html', certificados=certificados_data, categorias=categorias_data)
 
 @app.route('/pesquisar_certificados', methods=['GET', 'POST'])
+@login_required
 def pesquisar_certificados():
     certificados = []
     if request.method == 'POST':
@@ -114,11 +156,13 @@ def pesquisar_certificados():
 
 
 @app.route('/notifications')
+@login_required
 def notifications():
     return render_template('notifications.html')
 
 
 @app.route('/add_certificado', methods=['GET', 'POST'])
+@login_required
 def add_certificado():
     if request.method == 'POST':
         nome_certificado = request.form['nome_certificado']
@@ -152,6 +196,7 @@ def add_certificado():
 
 
 @app.route('/delete_certificado/<int:id_certificado>', methods=['POST'])
+@login_required
 def delete_certificado(id_certificado):
     try:
         result = delete_certificado_by_id(id_certificado)
@@ -165,6 +210,7 @@ def delete_certificado(id_certificado):
 
 
 @app.route('/edit_certificado/<int:id_certificado>', methods=['GET', 'POST'])
+@login_required
 def edit_certificado(id_certificado):
     if request.method == 'POST':
         nome_certificado = request.form['nome_certificado']
@@ -200,6 +246,7 @@ def edit_certificado(id_certificado):
 
 
 @app.route('/download_certificados')
+@login_required
 def download_certificados():
     # Conectar ao banco de dados e buscar dados dos certificados
     certificados = fetch_certificados()  # Função para buscar os certificados do banco
