@@ -10,7 +10,8 @@ import bcrypt
 from mysql.connector import Error
 import mysql.connector
 from functools import wraps
-from flask import redirect, url_for
+from flask import session, redirect, url_for
+
 
 # Variável de controle de login
 usuario_logado = False
@@ -30,44 +31,6 @@ def get_db_connection():
     except Error as e:
         print(f"Erro ao conectar ao MySQL: {e}")
         return None
-
-
-# Função para verificar credenciais no banco de dados
-def verificar_usuario(username, password):
-    try:
-        # Conectando ao banco de dados
-        conn = mysql.connector.connect(**db_config)
-        cursor = conn.cursor()
-
-        # Query para verificar usuário e senha
-        query = "SELECT * FROM usuarios WHERE usuario = %s AND senha = %s"
-        cursor.execute(query, (username, password))
-        result = cursor.fetchone()
-
-        # Fecha conexão
-        cursor.close()
-        conn.close()
-
-        # Se encontrar um resultado, credenciais estão corretas
-        if result:
-            return True
-        else:
-            return False
-
-    except mysql.connector.Error as err:
-        print(f"Erro: {err}")
-        return False
-
-# Função de login obrigatório para proteger rotas
-def login_required(f):
-    @wraps(f)
-    def decorated_function(*args, **kwargs):
-        global usuario_logado
-        if not usuario_logado:  # Verifica se o usuário está logado
-            return redirect(url_for('login'))  # Redireciona para a página de login se não estiver logado
-        return f(*args, **kwargs)
-    return decorated_function
-
 
 
 # api/models.py

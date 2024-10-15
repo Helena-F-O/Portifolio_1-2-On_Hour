@@ -4,7 +4,6 @@ from api.models import get_certificado_by_id, update_certificado
 from api.models import gerar_pdf_certificados, delete_certificado_by_id
 from api.models import fetch_certificados_participacao
 from api.models import fetch_certificados_outros
-from api.models import verificar_usuario, login_required, usuario_logado
 from api.models import get_db_connection
 from mysql.connector import Error
 from flask import send_file
@@ -14,40 +13,51 @@ from functools import wraps
 from flask import session, redirect, url_for
 import bcrypt
 
+from flask import Flask, session, redirect, url_for, request, render_template
+
+from flask import Flask, render_template, request, redirect, url_for, flash, session
+from werkzeug.security import check_password_hash  # Certifique-se de que essa linha está presente
+from api.models import fetch_data
+
 
 
 app = Flask(__name__, static_folder='assets', template_folder='pages')
 
-# Variável de controle de login global
-usuario_logado = False
-
+# Adicionando a chave secreta para a segurança da sessão
+app.secret_key = 'e58c865a06f2a3b1cfc8c5ff78d75a62'  # Substitua pela chave gerada ou altere por outra string
 
 # Rota de login
 @app.route('/login', methods=['GET', 'POST'])
 def login():
-    global usuario_logado
     if request.method == 'POST':
-        username = request.form['username']
-        password = request.form['password']
+        email = request.form['email']
+        senha = request.form['senha']
         
-        if verificar_usuario(username, password):
-            usuario_logado = True  # Marca o usuário como logado
+        # Obtendo todos os usuários do banco de dados
+        usuarios = fetch_data()
+        
+        # Verifica se as credenciais estão corretas
+        usuario_encontrado = next((usuario for usuario in usuarios if usuario['email'] == email), None)
+
+        if usuario_encontrado and check_password_hash(usuario_encontrado['senha'], senha):
+            # Armazena o ID do usuário na sessão
+            session['user_id'] = usuario_encontrado['cpf']  # Armazenar cpf ou id como preferir
+            flash('Login bem-sucedido!', 'success')
             return redirect(url_for('index'))  # Redireciona para a página inicial
         else:
-            return "Credenciais inválidas", 401
-
+            flash('Credenciais inválidas. Tente novamente.', 'danger')
+    
     return render_template('sign-in.html')
 
 # Rota de logout
 @app.route('/logout')
 def logout():
-    global usuario_logado
-    usuario_logado = False  # Desloga o usuário
-    return redirect(url_for('login'))
+    session.pop('user_id', None)  # Remove o ID do usuário da sessão
+    flash('Você saiu com sucesso.', 'success')
+    return redirect(url_for('sign-in'))
 
 
 @app.route('/')
-@login_required
 def index():
     usuario_data = fetch_data()
     certificados_data = fetch_certificados()  # Dados gerais de certificados
@@ -88,7 +98,6 @@ def index():
 
 
 @app.route('/profile')
-@login_required
 def profile():
     # Buscando os dados do banco usando as funções do models.py
     usuario_data = fetch_data()  # Retorna uma lista de dicionários
@@ -104,13 +113,11 @@ def profile():
 
 
 @app.route('/regulamento')
-@login_required
 def regulamento():
     return render_template('regulamento.html')
 
 
 @app.route('/relatorio')
-@login_required
 def relatorio():
     data = fetch_certificados()
     print("Dados passados para o template:", data)  # Verificar os dados enviados ao template
@@ -118,26 +125,22 @@ def relatorio():
 
 
 @app.route('/sign-in')
-@login_required
 def signin():
     return render_template('sign-in.html')
 
 
 @app.route('/sign-up')
-@login_required
 def signup():
     return render_template('sign-up.html')
 
 
 @app.route('/tables')
-@login_required
 def tables():
     certificados_data = fetch_certificados()
     categorias_data = fetch_categorias()
     return render_template('tables.html', certificados=certificados_data, categorias=categorias_data)
 
 @app.route('/pesquisar_certificados', methods=['GET', 'POST'])
-@login_required
 def pesquisar_certificados():
     certificados = []
     if request.method == 'POST':
@@ -156,13 +159,11 @@ def pesquisar_certificados():
 
 
 @app.route('/notifications')
-@login_required
 def notifications():
     return render_template('notifications.html')
 
 
 @app.route('/add_certificado', methods=['GET', 'POST'])
-@login_required
 def add_certificado():
     if request.method == 'POST':
         nome_certificado = request.form['nome_certificado']
@@ -196,7 +197,6 @@ def add_certificado():
 
 
 @app.route('/delete_certificado/<int:id_certificado>', methods=['POST'])
-@login_required
 def delete_certificado(id_certificado):
     try:
         result = delete_certificado_by_id(id_certificado)
@@ -210,7 +210,6 @@ def delete_certificado(id_certificado):
 
 
 @app.route('/edit_certificado/<int:id_certificado>', methods=['GET', 'POST'])
-@login_required
 def edit_certificado(id_certificado):
     if request.method == 'POST':
         nome_certificado = request.form['nome_certificado']
@@ -246,7 +245,6 @@ def edit_certificado(id_certificado):
 
 
 @app.route('/download_certificados')
-@login_required
 def download_certificados():
     # Conectar ao banco de dados e buscar dados dos certificados
     certificados = fetch_certificados()  # Função para buscar os certificados do banco
