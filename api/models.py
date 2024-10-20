@@ -11,7 +11,8 @@ from mysql.connector import Error
 import mysql.connector
 from functools import wraps
 from flask import session, redirect, url_for
-
+import bcrypt
+from mysql.connector import Error
 
 # Variável de controle de login
 usuario_logado = False
@@ -32,6 +33,25 @@ def get_db_connection():
         print(f"Erro ao conectar ao MySQL: {e}")
         return None
 
+def verificar_usuario(email, senha):
+    connection = get_db_connection()
+    if connection:
+        try:
+            cursor = connection.cursor(dictionary=True)
+            query = "SELECT * FROM usuarios WHERE email = %s"
+            cursor.execute(query, (email,))
+            usuario = cursor.fetchone()
+            cursor.close()
+            connection.close()
+
+            if usuario and usuario['senha'] == senha:
+                return usuario
+            else:
+                return None
+        except Error as e:
+            print(f"Erro ao executar a consulta: {e}")
+            return None
+
 
 # api/models.py
 def fetch_data():
@@ -51,7 +71,7 @@ def fetch_data():
         print("Falha ao conectar ao banco de dados")
     return []
 
-def fetch_certificados():
+def fetch_certificados(cpf_usuario):
     connection = get_db_connection()
     if connection:
         try:
@@ -60,10 +80,10 @@ def fetch_certificados():
             SELECT certificados.id_certificado, certificados.certificado, certificados.horas, categorias.categoria AS categoria
             FROM certificados
             JOIN categorias ON certificados.categoria_id = categorias.id_categoria
+            WHERE certificados.cpf_usuario = %s  -- Filtra pelos certificados do usuário logado
             """
-            cursor.execute(query)
+            cursor.execute(query, (cpf_usuario,))
             data = cursor.fetchall()
-            print("Dados retornados do banco de dados:", data)  # Verificar o conteúdo retornado
             cursor.close()
             connection.close()
             return data
@@ -72,6 +92,31 @@ def fetch_certificados():
     else:
         print("Falha ao conectar ao banco de dados")
     return []
+
+
+
+def inserir_usuario(cpf, usuario, email, senha, horas_exigidas):
+    connection = get_db_connection()
+    if connection:
+        try:
+            cursor = connection.cursor()
+            query = """
+            INSERT INTO usuarios (cpf, usuario, email, senha, horas_exigidas)
+            VALUES (%s, %s, %s, %s, %s)
+            """
+            cursor.execute(query, (cpf, usuario, email, senha, horas_exigidas))
+            connection.commit()
+            cursor.close()
+            connection.close()
+            return True
+        except Error as e:
+            print(f"Erro ao inserir usuário: {e}")  # Log do erro
+            connection.rollback()  # Desfaz as alterações em caso de erro
+            return False
+    else:
+        print("Falha ao conectar ao banco de dados")
+    return False
+
 
 
 def fetch_categorias():
@@ -98,6 +143,37 @@ def fetch_categorias():
     else:
         print("Falha ao conectar ao banco de dados")
     return []
+
+
+def fetch_categorias_cpf(cpf_usuario):
+    connection = get_db_connection()
+    if connection:
+        try:
+            cursor = connection.cursor(dictionary=True)
+            query = """
+            SELECT 
+                categorias.id_categoria, 
+                categorias.categoria, 
+                categorias.horas_maximas, 
+                COALESCE(SUM(certificados.horas), 0) AS total_horas, 
+                COALESCE((SUM(certificados.horas) / categorias.horas_maximas) * 100, 0) AS percentual
+            FROM categorias
+            LEFT JOIN certificados 
+                ON categorias.id_categoria = certificados.categoria_id
+                AND certificados.cpf_usuario = %s  -- Filtro pelo CPF
+            GROUP BY categorias.id_categoria, categorias.categoria, categorias.horas_maximas
+            """
+            cursor.execute(query, (cpf_usuario,))
+            data = cursor.fetchall()
+            cursor.close()
+            connection.close()
+            return data
+        except Error as e:
+            print(f"Erro ao executar a consulta: {e}")
+    else:
+        print("Falha ao conectar ao banco de dados")
+    return []
+
 
 
 def add_certificado(nome_certificado, horas, data_emissao, categoria_id, cpf_usuario):

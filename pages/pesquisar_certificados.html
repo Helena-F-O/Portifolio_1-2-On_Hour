@@ -10,7 +10,8 @@
     On Hour - Certificados
   </title>
   <!--     Fonts and icons     -->
-  <link rel="stylesheet" type="text/css" href="https://fonts.googleapis.com/css?family=Roboto:300,400,500,700,900|Roboto+Slab:400,700" />
+  <link rel="stylesheet" type="text/css"
+    href="https://fonts.googleapis.com/css?family=Roboto:300,400,500,700,900|Roboto+Slab:400,700" />
   <!-- Nucleo Icons -->
   <link href="../assets/css/nucleo-icons.css" rel="stylesheet" />
   <link href="../assets/css/nucleo-svg.css" rel="stylesheet" />
@@ -20,16 +21,20 @@
   <link href="https://fonts.googleapis.com/icon?family=Material+Icons+Round" rel="stylesheet">
   <!-- CSS Files -->
   <link id="pagestyle" href="../assets/css/material-dashboard.css?v=3.1.0" rel="stylesheet" />
-  
-  
-  
+
+
+
 </head>
 
 <body class="g-sidenav-show  bg-gray-200">
-  <aside class="sidenav navbar navbar-vertical navbar-expand-xs border-0 border-radius-xl my-3 fixed-start ms-3   bg-gradient-dark" id="sidenav-main">
+  <aside
+    class="sidenav navbar navbar-vertical navbar-expand-xs border-0 border-radius-xl my-3 fixed-start ms-3   bg-gradient-dark"
+    id="sidenav-main">
     <div class="sidenav-header">
-      <i class="fas fa-times p-3 cursor-pointer text-white opacity-5 position-absolute end-0 top-0 d-none d-xl-none" aria-hidden="true" id="iconSidenav"></i>
-      <a class="navbar-brand m-0" href=" https://demos.creative-tim.com/material-dashboard/pages/dashboard " target="_blank">
+      <i class="fas fa-times p-3 cursor-pointer text-white opacity-5 position-absolute end-0 top-0 d-none d-xl-none"
+        aria-hidden="true" id="iconSidenav"></i>
+      <a class="navbar-brand m-0" href=" https://demos.creative-tim.com/material-dashboard/pages/dashboard "
+        target="_blank">
         <img src="../assets/img/logo-ct.png" class="navbar-brand-img h-100" alt="main_logo">
         <span class="ms-1 font-weight-bold text-white">On Hour</span>
       </a>
@@ -72,11 +77,11 @@
         <li class="nav-item">
           <a class="nav-link text-white active bg-gradient-primary" href="{{ url_for('pesquisar_certificados') }}">
             <div class="text-white text-center me-2 d-flex align-items-center justify-content-center">
-              <i class="material-icons opacity-10">search</i>  <!-- Ícone de lupa -->
+              <i class="material-icons opacity-10">search</i> <!-- Ícone de lupa -->
             </div>
             <span class="nav-link-text ms-1">Consultar CPF</span>
           </a>
-        </li>        
+        </li>
         <li class="nav-item mt-3">
           <h6 class="ps-4 ms-2 text-uppercase text-xs text-white font-weight-bolder opacity-8">Account pages</h6>
         </li>
@@ -97,11 +102,11 @@
           </a>
         </li>
         <li class="nav-item">
-          <a class="nav-link text-white " href="{{ url_for('signup') }}">
+          <a class="nav-link text-white" href="{{ url_for('logout') }}">
             <div class="text-white text-center me-2 d-flex align-items-center justify-content-center">
-              <i class="material-icons opacity-10">assignment</i>
+              <i class="material-icons opacity-10">logout</i> <!-- Ícone de logout -->
             </div>
-            <span class="nav-link-text ms-1">Sign Up</span>
+            <span class="nav-link-text ms-1">Logout</span>
           </a>
         </li>
       </ul>
@@ -109,107 +114,114 @@
   </aside>
   <main class="main-content position-relative max-height-vh-100 h-100 border-radius-lg ">
     <!-- Navbar -->
-    <nav class="navbar navbar-main navbar-expand-lg px-0 mx-4 shadow-none border-radius-xl" id="navbarBlur" data-scroll="true">
-        <div class="container-fluid py-1 px-3">
-            <nav aria-label="breadcrumb">
-                <ol class="breadcrumb bg-transparent mb-0 pb-0 pt-1 px-0 me-sm-6 me-5">
-                    <li class="breadcrumb-item text-sm"><a class="opacity-5 text-dark" href="javascript:;">Pages</a></li>
-                    <li class="breadcrumb-item text-sm text-dark active" aria-current="page">Consultar CPF</li>
-                </ol>
-                <h6 class="font-weight-bolder mb-0">Consultar CPF</h6>
-            </nav>
-        </div>
+    <nav class="navbar navbar-main navbar-expand-lg px-0 mx-4 shadow-none border-radius-xl" id="navbarBlur"
+      data-scroll="true">
+      <div class="container-fluid py-1 px-3">
+        <nav aria-label="breadcrumb">
+          <ol class="breadcrumb bg-transparent mb-0 pb-0 pt-1 px-0 me-sm-6 me-5">
+            <li class="breadcrumb-item text-sm"><a class="opacity-5 text-dark" href="javascript:;">Pages</a></li>
+            <li class="breadcrumb-item text-sm text-dark active" aria-current="page">Consultar CPF</li>
+          </ol>
+          <h6 class="font-weight-bolder mb-0">Consultar CPF</h6>
+        </nav>
+      </div>
     </nav>
     <!-- End Navbar -->
 
     <div class="container-fluid py-4">
       <div class="row">
-          <div class="col-12">
-              <div class="card my-4">
-                  <div class="card-header p-0 position-relative mt-n4 mx-3 z-index-2">
-                      <div class="bg-gradient-primary shadow-primary border-radius-lg pt-4 pb-3">
-                          <h6 class="text-white text-capitalize ps-3">Consultar CPF</h6>
-                      </div>
-                  </div>
-                  <div class="card-body px-0 pb-2">
-                    <div class="d-flex justify-content-center align-items-center mt-3">
-                      <form method="POST" class="w-30 my-4 mb-2">
-                          <div class="input-group input-group-outline my-3">
-                            <input type="text" id="cpf" name="cpf" class="form-control" placeholder="Informe o CPF" required>
-                          </div>
-                          <div class="d-flex justify-content-center align-items-center mt-3">
-                            <button type="submit" class="btn bg-gradient-primary w-100">Pesquisar</button>
-                          </div>
-                      </form>
-                    </div>
-                      <div class="table-responsive p-0">
-                          <table class="table align-items-center justify-content-center mb-0">
-                              <thead>
-                                  <tr>
-                                      <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">Certificado</th>
-                                      <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 ps-2">Horas</th>
-                                      <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 ps-2">Categoria</th>
-                                  </tr>
-                              </thead>
-                              <tbody>
-                                  {% if certificados %}
-                                      {% for cert in certificados %}
-                                          <tr>
-                                              <td>
-                                                  <div class="d-flex px-2">
-                                                      <div>
-                                                          <img src="../assets/img/small-logos/logo-asana.svg" class="avatar avatar-sm rounded-circle me-2" alt="certificado">
-                                                      </div>
-                                                      <div class="my-auto">
-                                                          <h6 class="mb-0 text-sm">{{ cert['certificado'] }}</h6>
-                                                      </div>
-                                                  </div>
-                                              </td>
-                                              <td>
-                                                  <p class="text-sm font-weight-bold mb-0">{{ cert['horas'] }}H</p>
-                                              </td>
-                                              <td>
-                                                  <span class="text-xs font-weight-bold">{{ cert['categoria'] }}</span> <!-- Altere para a categoria real se necessário -->
-                                              </td>
-                                          </tr>
-                                      {% endfor %}
-                                  {% else %}
-                                      <tr>
-                                          <td colspan="4" class="text-center">Nenhum dado encontrado</td>
-                                      </tr>
-                                  {% endif %}
-                              </tbody>
-                          </table>
-                      </div>
-                  </div>
+        <div class="col-12">
+          <div class="card my-4">
+            <div class="card-header p-0 position-relative mt-n4 mx-3 z-index-2">
+              <div class="bg-gradient-primary shadow-primary border-radius-lg pt-4 pb-3">
+                <h6 class="text-white text-capitalize ps-3">Consultar CPF</h6>
               </div>
+            </div>
+            <div class="card-body px-0 pb-2">
+              <div class="d-flex justify-content-center align-items-center mt-3">
+                <form method="POST" class="w-30 my-4 mb-2">
+                  <div class="input-group input-group-outline my-3">
+                    <input type="text" id="cpf" name="cpf" class="form-control" placeholder="Informe o CPF" required>
+                  </div>
+                  <div class="d-flex justify-content-center align-items-center mt-3">
+                    <button type="submit" class="btn bg-gradient-primary w-100">Pesquisar</button>
+                  </div>
+                </form>
+              </div>
+              <div class="table-responsive p-0">
+                <table class="table align-items-center justify-content-center mb-0">
+                  <thead>
+                    <tr>
+                      <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">Certificado</th>
+                      <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 ps-2">Horas</th>
+                      <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 ps-2">Categoria
+                      </th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {% if certificados %}
+                    {% for cert in certificados %}
+                    <tr>
+                      <td>
+                        <div class="d-flex px-2">
+                          <div>
+                            <img src="../assets/img/small-logos/logo-asana.svg"
+                              class="avatar avatar-sm rounded-circle me-2" alt="certificado">
+                          </div>
+                          <div class="my-auto">
+                            <h6 class="mb-0 text-sm">{{ cert['certificado'] }}</h6>
+                          </div>
+                        </div>
+                      </td>
+                      <td>
+                        <p class="text-sm font-weight-bold mb-0">{{ cert['horas'] }}H</p>
+                      </td>
+                      <td>
+                        <span class="text-xs font-weight-bold">{{ cert['categoria'] }}</span>
+                        <!-- Altere para a categoria real se necessário -->
+                      </td>
+                    </tr>
+                    {% endfor %}
+                    {% else %}
+                    <tr>
+                      <td colspan="4" class="text-center">Nenhum dado encontrado</td>
+                    </tr>
+                    {% endif %}
+                  </tbody>
+                </table>
+              </div>
+            </div>
           </div>
+          <a href="/download_certificados">
+            <button class="btn bg-gradient-primary w-100 mb-0 toast-btn" type="button" data-target="successToast">Gerar Relatório</button>
+          </a>
+        </div>
       </div>
-  </div>
-    
-</main>
+    </div>
 
-<!-- Core JS Files -->
-<script src="../assets/js/core/popper.min.js"></script>
-<script src="../assets/js/core/bootstrap.min.js"></script>
-<script src="../assets/js/plugins/perfect-scrollbar.min.js"></script>
-<script src="../assets/js/plugins/smooth-scrollbar.min.js"></script>
+  </main>
 
-<script>
+  <!-- Core JS Files -->
+  <script src="../assets/js/core/popper.min.js"></script>
+  <script src="../assets/js/core/bootstrap.min.js"></script>
+  <script src="../assets/js/plugins/perfect-scrollbar.min.js"></script>
+  <script src="../assets/js/plugins/smooth-scrollbar.min.js"></script>
+
+  <script>
     function searchByCPF(event) {
-        event.preventDefault();
-        const cpf = document.getElementById('cpfInput').value;
+      event.preventDefault();
+      const cpf = document.getElementById('cpfInput').value;
 
-        // Realizar requisição para o backend para buscar certificados por CPF
-        fetch(`/search_certificados_by_cpf?cpf=${cpf}`)
+      // Realizar requisição para o backend para buscar certificados por CPF
+      fetch(`/search_certificados_by_cpf?cpf=${cpf}`)
         .then(response => response.json())
         .then(certificados => {
-            const certificadosBody = document.getElementById('certificadosBody');
-            certificadosBody.innerHTML = ''; // Limpar tabela
+          const certificadosBody = document.getElementById('certificadosBody');
+          certificadosBody.innerHTML = ''; // Limpar tabela
 
-            if (certificados.length > 0) {
-                certificados.forEach(cert => {
-                    const row = `
+          if (certificados.length > 0) {
+            certificados.forEach(cert => {
+              const row = `
                         <tr>
                             <td>
                                 <div class="d-flex px-2">
@@ -230,11 +242,11 @@
                                 <button class="btn btn-link text-secondary mb-0" onclick="excluirCertificado(${cert.id_certificado})">Excluir</button>
                             </td>
                         </tr>`;
-                    certificadosBody.innerHTML += row;
-                });
-            } else {
-                certificadosBody.innerHTML = '<tr><td colspan="4">Nenhum certificado encontrado para este CPF.</td></tr>';
-            }
+              certificadosBody.innerHTML += row;
+            });
+          } else {
+            certificadosBody.innerHTML = '<tr><td colspan="4">Nenhum certificado encontrado para este CPF.</td></tr>';
+          }
         });
     }
-</script>
+  </script>

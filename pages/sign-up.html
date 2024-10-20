@@ -42,34 +42,42 @@
                   <p class="mb-0">Insira seus dados para cadastrar!</p>
                 </div>
                 <div class="card-body">
-                  <form role="form">
+                  <form id="signup-form" role="form">
                     <div class="input-group input-group-outline mb-3">
-                      <label class="form-label">Nome</label>
-                      <input type="text" class="form-control">
+                      <label class="form-label">Nome de Usuário</label>
+                      <input type="text" name="usuario" class="form-control" required>
+                    </div>
+                    <div class="input-group input-group-outline mb-3">
+                      <label class="form-label">CPF</label>
+                      <input type="text" name="cpf" class="form-control" required pattern="\d{11}" title="Digite o CPF sem pontos ou traços.">
                     </div>
                     <div class="input-group input-group-outline mb-3">
                       <label class="form-label">Email</label>
-                      <input type="email" class="form-control">
+                      <input type="email" name="email" class="form-control" required>
                     </div>
                     <div class="input-group input-group-outline mb-3">
                       <label class="form-label">Senha</label>
-                      <input type="password" class="form-control">
+                      <input type="password" name="senha" class="form-control" required>
+                    </div>
+                    <div class="input-group input-group-outline mb-3">
+                      <label class="form-label">Horas Exigidas</label>
+                      <input type="number" step="0.01" name="horas_exigidas" class="form-control" required>
                     </div>
                     <div class="form-check form-check-info text-start ps-0">
-                      <input class="form-check-input" type="checkbox" value="" id="flexCheckDefault" checked>
+                      <input class="form-check-input" type="checkbox" value="" id="flexCheckDefault" required>
                       <label class="form-check-label" for="flexCheckDefault">
                         Concordo com os <a href="javascript:;" class="text-dark font-weight-bolder">Termos e Condições</a>
                       </label>
                     </div>
                     <div class="text-center">
-                      <a href="../pages/index.html"><button type="button" class="btn btn-lg bg-gradient-primary btn-lg w-100 mt-4 mb-0">Sign Up</button></a>
+                      <button type="submit" class="btn btn-lg bg-gradient-primary btn-lg w-100 mt-4 mb-0">Cadastrar</button>
                     </div>
-                  </form>
+                  </form>           
                 </div>
                 <div class="card-footer text-center pt-0 px-lg-2 px-1">
                   <p class="mb-2 text-sm mx-auto">
                     Já possui uma conta?
-                    <a href="../pages/sign-in.html" class="text-primary text-gradient font-weight-bold">Sign in</a>
+                    <a href="{{ url_for('signup') }}" class="text-primary text-gradient font-weight-bold">Sign in</a>
                   </p>
                 </div>
               </div>
@@ -93,6 +101,30 @@
       Scrollbar.init(document.querySelector('#sidenav-scrollbar'), options);
     }
   </script>
+
+<script>
+  document.getElementById('signup-form').addEventListener('submit', async function(event) {
+    event.preventDefault(); // Impede o envio padrão do formulário
+
+    const formData = new FormData(this);
+    const response = await fetch('/cadastrar_usuario', {
+      method: 'POST',
+      body: formData
+    });
+
+    const message = await response.text();
+    
+    if (response.ok) {
+      alert(message); // Alerta de sucesso
+      location.reload();
+      // Redirecionar ou realizar outras ações, se necessário
+    } else {
+      alert(message); // Alerta de erro
+      location.reload();
+    }
+  });
+</script>
+
   <!-- Github buttons -->
   <script async defer src="https://buttons.github.io/buttons.js"></script>
   <!-- Control Center for Material Dashboard: parallax effects, scripts for the example pages etc -->

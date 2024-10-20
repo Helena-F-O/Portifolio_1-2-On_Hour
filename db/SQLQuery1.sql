@@ -6,7 +6,7 @@ CREATE TABLE usuarios(
     cpf NUMERIC(15, 0) NOT NULL PRIMARY KEY, 
     usuario VARCHAR(45) NOT NULL, 
     email VARCHAR(45) NOT NULL, 
-    senha VARCHAR(45) NOT NULL, 
+    senha VARCHAR(100) NOT NULL, 
     horas_exigidas FLOAT NOT NULL
 );
 

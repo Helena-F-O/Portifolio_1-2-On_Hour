@@ -3,75 +3,74 @@ from api.models import fetch_data, fetch_certificados, fetch_categorias
 from api.models import get_certificado_by_id, update_certificado
 from api.models import gerar_pdf_certificados, delete_certificado_by_id
 from api.models import fetch_certificados_participacao
-from api.models import fetch_certificados_outros
-from api.models import get_db_connection
+from api.models import fetch_certificados_outros, inserir_usuario
+from api.models import get_db_connection, fetch_categorias_cpf
 from mysql.connector import Error
 from flask import send_file
 import bcrypt
 from flask import redirect, url_for, session
 from functools import wraps
 from flask import session, redirect, url_for
-import bcrypt
-
 from flask import Flask, session, redirect, url_for, request, render_template
-
 from flask import Flask, render_template, request, redirect, url_for, flash, session
 from werkzeug.security import check_password_hash  # Certifique-se de que essa linha está presente
 from api.models import fetch_data
+from api.models import verificar_usuario
+
 
 
 
 app = Flask(__name__, static_folder='assets', template_folder='pages')
+app.secret_key = 'minha_chave_temporaria'
 
-# Adicionando a chave secreta para a segurança da sessão
-app.secret_key = 'e58c865a06f2a3b1cfc8c5ff78d75a62'  # Substitua pela chave gerada ou altere por outra string
 
-# Rota de login
+import bcrypt
+ 
+
 @app.route('/login', methods=['GET', 'POST'])
 def login():
     if request.method == 'POST':
         email = request.form['email']
         senha = request.form['senha']
-        
-        # Obtendo todos os usuários do banco de dados
-        usuarios = fetch_data()
-        
-        # Verifica se as credenciais estão corretas
-        usuario_encontrado = next((usuario for usuario in usuarios if usuario['email'] == email), None)
 
-        if usuario_encontrado and check_password_hash(usuario_encontrado['senha'], senha):
-            # Armazena o ID do usuário na sessão
-            session['user_id'] = usuario_encontrado['cpf']  # Armazenar cpf ou id como preferir
-            flash('Login bem-sucedido!', 'success')
-            return redirect(url_for('index'))  # Redireciona para a página inicial
+        usuario = verificar_usuario(email, senha)
+        if usuario:
+            session['usuario_id'] = usuario['cpf']
+            session['usuario_nome'] = usuario['usuario']
+            session['cpf_usuario'] = cpf_usuario
+            return redirect(url_for('index'))
         else:
-            flash('Credenciais inválidas. Tente novamente.', 'danger')
-    
-    return render_template('sign-in.html')
+            flash('Login ou senha incorretos. Tente novamente.', 'danger')
+            return redirect(url_for('login'))
+
+    return render_template('sign-in.html')  # Use seu template de login aqui
 
 # Rota de logout
 @app.route('/logout')
 def logout():
-    session.pop('user_id', None)  # Remove o ID do usuário da sessão
-    flash('Você saiu com sucesso.', 'success')
-    return redirect(url_for('sign-in'))
+    session.clear()
+    return redirect(url_for('login'))
 
 
 @app.route('/')
 def index():
+    if 'usuario_id' not in session:
+        return redirect(url_for('login'))
+
+    cpf_usuario_logado = session.get('cpf_usuario')
+
     usuario_data = fetch_data()
-    certificados_data = fetch_certificados()  # Dados gerais de certificados
-    categorias_data = fetch_categorias()  # Dados das categorias
+    certificados_data = fetch_certificados(cpf_usuario_logado)  # Dados gerais de certificados
+    categorias_data = fetch_categorias_cpf(cpf_usuario_logado)  # Dados das categorias
 
     if usuario_data:
         usuario = usuario_data[0]
-        cpf_usuario = usuario.get('cpf', '12345678900') 
+        cpf_usuario = usuario.get('cpf_usuario')  # Obter o CPF do usuário logado
     else:
-        usuario = {}
-        cpf_usuario = '12345678900'  
+        return redirect(url_for('login'))
 
     # Buscando certificados da pessoa na categoria "Participação"
-    certificados_participacao = fetch_certificados_participacao(cpf_usuario)
+    certificados_participacao = fetch_certificados_participacao(cpf_usuario_logado)
     categorias_participacao = [certificado['categoria'] for certificado in certificados_participacao]
     horas_participacao = [certificado['total_horas'] for certificado in certificados_participacao]
 
@@ -79,7 +78,7 @@ def index():
     categorias_participacao = categorias_participacao or ['Nenhuma Participação']  # Default label if empty
 
     # Buscando certificados das categorias restantes
-    certificados_outros = fetch_certificados_outros(cpf_usuario)
+    certificados_outros = fetch_certificados_outros(cpf_usuario_logado)
     categorias_outros = [certificado['categoria'] for certificado in certificados_outros]
     horas_outros = [certificado['total_horas'] for certificado in certificados_outros]
 
@@ -99,27 +98,35 @@ def index():
 
 @app.route('/profile')
 def profile():
-    # Buscando os dados do banco usando as funções do models.py
-    usuario_data = fetch_data()  # Retorna uma lista de dicionários
-
-    # Para este exemplo, vou considerar que você está interessado apenas no primeiro usuário retornado
+    if 'usuario_id' not in session:
+        return redirect(url_for('login'))
+    
+    # Buscando os dados do usuário
+    usuario_data = fetch_data()  
     if usuario_data:
-        usuario = usuario_data[0]  # Pegando o primeiro usuário
+        usuario = usuario_data[0]
     else:
         usuario = {}
 
-    # Renderizando o template com os dados do usuário
     return render_template('profile.html', usuario=usuario)
 
 
 @app.route('/regulamento')
 def regulamento():
+    if 'usuario_id' not in session:
+        return redirect(url_for('login'))
+
     return render_template('regulamento.html')
 
 
 @app.route('/relatorio')
 def relatorio():
-    data = fetch_certificados()
+    if 'usuario_id' not in session:
+        return redirect(url_for('login'))
+
+    cpf_usuario_logado = session.get('cpf_usuario')
+
+    data = fetch_certificados(cpf_usuario_logado)
     print("Dados passados para o template:", data)  # Verificar os dados enviados ao template
     return render_template('relatorio.html', data=data)
 
@@ -133,15 +140,41 @@ def signin():
 def signup():
     return render_template('sign-up.html')
 
+@app.route('/cadastrar_usuario', methods=['POST'])
+def cadastrar_usuario():
+    try:
+        usuario = request.form['usuario']
+        cpf = request.form['cpf']
+        email = request.form['email']
+        senha = request.form['senha']
+        horas_exigidas = request.form['horas_exigidas']
+
+        # Tente inserir o usuário no banco de dados
+        if inserir_usuario(cpf, usuario, email, senha, horas_exigidas):
+            return 'Usuário cadastrado com sucesso!', 200  # Mensagem de sucesso
+        else:
+            return 'Erro ao cadastrar usuário. Verifique os dados e tente novamente.', 400  # Mensagem de erro
+    except Exception as e:
+        print(f"Erro ao cadastrar usuário: {e}")  # Log do erro no console
+        return 'Ocorreu um erro ao cadastrar o usuário.', 500  # Mensagem de erro genérica
+
 
 @app.route('/tables')
 def tables():
-    certificados_data = fetch_certificados()
+    if 'usuario_id' not in session:
+        return redirect(url_for('login'))
+
+    cpf_usuario = session.get('cpf_usuario')
+
+    certificados_data = fetch_certificados(cpf_usuario)
     categorias_data = fetch_categorias()
     return render_template('tables.html', certificados=certificados_data, categorias=categorias_data)
 
 @app.route('/pesquisar_certificados', methods=['GET', 'POST'])
 def pesquisar_certificados():
+    if 'usuario_id' not in session:
+        return redirect(url_for('login'))
+
     certificados = []
     if request.method == 'POST':
         cpf = request.form['cpf']
@@ -160,11 +193,19 @@ def pesquisar_certificados():
 
 @app.route('/notifications')
 def notifications():
+    if 'usuario_id' not in session:
+        return redirect(url_for('login'))
+
     return render_template('notifications.html')
 
 
 @app.route('/add_certificado', methods=['GET', 'POST'])
 def add_certificado():
+    if 'usuario_id' not in session:
+        return redirect(url_for('login'))
+
+    usuario_cpf = session.get('usuario_cpf')
+
     if request.method == 'POST':
         nome_certificado = request.form['nome_certificado']
         horas = request.form['horas']
@@ -180,7 +221,7 @@ def add_certificado():
                 INSERT INTO certificados (certificado, horas, data_emissao, categoria_id, usuario_cpf)
                 VALUES (%s, %s, %s, %s, %s)
                 """
-                cursor.execute(query, (nome_certificado, horas, data_emissao, categoria_id, '12345678900'))
+                cursor.execute(query, (nome_certificado, horas, data_emissao, categoria_id, usuario_cpf))
                 connection.commit()
                 cursor.close()
                 connection.close()
@@ -211,6 +252,9 @@ def delete_certificado(id_certificado):
 
 @app.route('/edit_certificado/<int:id_certificado>', methods=['GET', 'POST'])
 def edit_certificado(id_certificado):
+    if 'usuario_id' not in session:
+        return redirect(url_for('login'))
+
     if request.method == 'POST':
         nome_certificado = request.form['nome_certificado']
         horas = request.form['horas']
@@ -246,8 +290,10 @@ def edit_certificado(id_certificado):
 
 @app.route('/download_certificados')
 def download_certificados():
+
+    cpf_usuario = session.get('cpf_usuario')
     # Conectar ao banco de dados e buscar dados dos certificados
-    certificados = fetch_certificados()  # Função para buscar os certificados do banco
+    certificados = fetch_certificados(cpf_usuario)  # Função para buscar os certificados do banco
     pdf_buffer = gerar_pdf_certificados(certificados)
     return send_file(pdf_buffer, as_attachment=True, download_name='certificados.pdf', mimetype='application/pdf')
 
