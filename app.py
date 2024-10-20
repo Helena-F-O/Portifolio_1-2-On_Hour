@@ -29,6 +29,7 @@ import bcrypt
 
 @app.route('/login', methods=['GET', 'POST'])
 def login():
+    
     if request.method == 'POST':
         email = request.form['email']
         senha = request.form['senha']
@@ -37,7 +38,9 @@ def login():
         if usuario:
             session['usuario_id'] = usuario['cpf']
             session['usuario_nome'] = usuario['usuario']
-            session['cpf_usuario'] = cpf_usuario
+            session['cpf_usuario'] = usuario['cpf']
+
+            cpf_usuario = usuario['cpf']
             return redirect(url_for('index'))
         else:
             flash('Login ou senha incorretos. Tente novamente.', 'danger')
@@ -59,7 +62,7 @@ def index():
 
     cpf_usuario_logado = session.get('cpf_usuario')
 
-    usuario_data = fetch_data()
+    usuario_data = fetch_data(cpf_usuario_logado)
     certificados_data = fetch_certificados(cpf_usuario_logado)  # Dados gerais de certificados
     categorias_data = fetch_categorias_cpf(cpf_usuario_logado)  # Dados das categorias
 
@@ -100,9 +103,11 @@ def index():
 def profile():
     if 'usuario_id' not in session:
         return redirect(url_for('login'))
+
+    cpf_usuario_logado = session.get('cpf_usuario')
     
     # Buscando os dados do usuário
-    usuario_data = fetch_data()  
+    usuario_data = fetch_data(cpf_usuario_logado)  
     if usuario_data:
         usuario = usuario_data[0]
     else:
@@ -164,9 +169,9 @@ def tables():
     if 'usuario_id' not in session:
         return redirect(url_for('login'))
 
-    cpf_usuario = session.get('cpf_usuario')
+    cpf_usuario_logado = session.get('cpf_usuario')
 
-    certificados_data = fetch_certificados(cpf_usuario)
+    certificados_data = fetch_certificados(cpf_usuario_logado)
     categorias_data = fetch_categorias()
     return render_template('tables.html', certificados=certificados_data, categorias=categorias_data)
 

@@ -54,12 +54,17 @@ def verificar_usuario(email, senha):
 
 
 # api/models.py
-def fetch_data():
+def fetch_data(cpf_usuario):
     connection = get_db_connection()
     if connection:
         try:
             cursor = connection.cursor(dictionary=True)
-            cursor.execute("SELECT cpf, usuario, email, senha, horas_exigidas FROM usuarios")
+            query = """
+            SELECT cpf, usuario, email, senha, horas_exigidas 
+            FROM usuarios 
+            WHERE cpf = %s  -- Filtro pelo CPF
+            """
+            cursor.execute(query, (cpf_usuario,))
             data = cursor.fetchall()
             print("Dados retornados do banco de dados:", data)  # Verificar o conteúdo retornado
             cursor.close()
@@ -70,6 +75,7 @@ def fetch_data():
     else:
         print("Falha ao conectar ao banco de dados")
     return []
+
 
 def fetch_certificados(cpf_usuario):
     connection = get_db_connection()
