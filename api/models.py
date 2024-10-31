@@ -86,7 +86,7 @@ def fetch_certificados(cpf_usuario):
             SELECT certificados.id_certificado, certificados.certificado, certificados.horas, categorias.categoria AS categoria
             FROM certificados
             JOIN categorias ON certificados.categoria_id = categorias.id_categoria
-            WHERE certificados.cpf_usuario = %s  -- Filtra pelos certificados do usuário logado
+            WHERE certificados.usuario_cpf = %s  -- Filtra pelos certificados do usuário logado
             """
             cursor.execute(query, (cpf_usuario,))
             data = cursor.fetchall()
@@ -166,7 +166,7 @@ def fetch_categorias_cpf(cpf_usuario):
             FROM categorias
             LEFT JOIN certificados 
                 ON categorias.id_categoria = certificados.categoria_id
-                AND certificados.cpf_usuario = %s  -- Filtro pelo CPF
+                AND certificados.usuario_cpf = %s  -- Filtro pelo CPF
             GROUP BY categorias.id_categoria, categorias.categoria, categorias.horas_maximas
             """
             cursor.execute(query, (cpf_usuario,))

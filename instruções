@@ -3,6 +3,7 @@ Comandos uteis para o projeto
 pip install -r requirements.txt
 pip install flask_sqlalchemy
 pip install pytest
+pip install bcrypt
 pip install reportlab
 pip install pytest flask pytest-flask
 

@@ -28,7 +28,7 @@ CREATE TABLE certificados(
 );
 
 INSERT INTO usuarios(cpf, usuario, email, senha, horas_exigidas)
-VALUES (12345678900, 'helena', 'helena@gmail.com', '1234', 234);
+VALUES (12345678900, 'helena', 'helena@gmail.com', '1234', 234), (98765432100, 'antonio', 'antonio@gmail.com', '1234', 200);
 
 INSERT INTO categorias(id_categoria, categoria, horas_maximas)
 VALUES 

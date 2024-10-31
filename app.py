@@ -61,6 +61,9 @@ def index():
         return redirect(url_for('login'))
 
     cpf_usuario_logado = session.get('cpf_usuario')
+    
+    # Adicionando debug para verificar qual CPF está sendo usado
+    print(f"CPF do usuário logado: {cpf_usuario_logado}")
 
     usuario_data = fetch_data(cpf_usuario_logado)
     certificados_data = fetch_certificados(cpf_usuario_logado)  # Dados gerais de certificados
@@ -69,7 +72,9 @@ def index():
     if usuario_data:
         usuario = usuario_data[0]
         cpf_usuario = usuario.get('cpf_usuario')  # Obter o CPF do usuário logado
+        print(f"Dados do usuário retornados: {usuario_data}")
     else:
+        print("Usuário não encontrado, redirecionando para login.")
         return redirect(url_for('login'))
 
     # Buscando certificados da pessoa na categoria "Participação"
@@ -80,6 +85,8 @@ def index():
     horas_participacao = horas_participacao or [0]  # Default to zero if empty
     categorias_participacao = categorias_participacao or ['Nenhuma Participação']  # Default label if empty
 
+    print(f"Certificados de Participação: {certificados_participacao}")
+
     # Buscando certificados das categorias restantes
     certificados_outros = fetch_certificados_outros(cpf_usuario_logado)
     categorias_outros = [certificado['categoria'] for certificado in certificados_outros]
@@ -88,10 +95,14 @@ def index():
     horas_outros = horas_outros or [0]  # Default to zero if empty
     categorias_outros = categorias_outros or ['Nenhuma Categoria']  # Default label if empty
 
+    print(f"Certificados de Outras Categorias: {certificados_outros}")
+
     # Adicionando os cálculos ao contexto
     horas_exigidas = usuario.get('horas_exigidas', 0)
     total_horas_feitas = sum(categoria['total_horas'] for categoria in categorias_data)
     horas_faltantes = max(horas_exigidas - total_horas_feitas, 0)
+
+    print(f"Total de horas feitas: {total_horas_feitas}, Horas faltantes: {horas_faltantes}")
 
     usuario['horas_feitas'] = total_horas_feitas
     usuario['horas_faltantes'] = horas_faltantes
