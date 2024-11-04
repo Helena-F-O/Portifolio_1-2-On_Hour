@@ -11,10 +11,10 @@ jobs:
 
     steps:
     - name: Checkout Code
-      uses: actions/checkout@v2
+      uses: actions/checkout@v4  # Atualize para v4
 
     - name: Set up Python
-      uses: actions/setup-python@v2
+      uses: actions/setup-python@v4  # Atualize para v4
       with:
         python-version: '3.9'  # Ajuste para a versão do Python que você está usando
 
@@ -29,7 +29,7 @@ jobs:
 
     - name: Deploy to Heroku
       env:
-        HEROKU_API_KEY: ${{ secrets.HRKU-d6225da8-022c-4edc-8cae-2f79c8541783 }}
+        HEROKU_API_KEY: ${{ secrets.HEROKU_API_KEY }}
       run: |
         git remote add heroku https://git.heroku.com/${{ secrets.HEROKU_APP_NAME }}.git
         git push heroku main
