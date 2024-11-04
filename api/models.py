@@ -100,7 +100,6 @@ def fetch_certificados(cpf_usuario):
     return []
 
 
-
 def inserir_usuario(cpf, usuario, email, senha, horas_exigidas):
     connection = get_db_connection()
     if connection:

@@ -183,7 +183,7 @@ def tables():
     cpf_usuario_logado = session.get('cpf_usuario')
 
     certificados_data = fetch_certificados(cpf_usuario_logado)
-    categorias_data = fetch_categorias()
+    categorias_data = fetch_categorias_cpf(cpf_usuario_logado)
     return render_template('tables.html', certificados=certificados_data, categorias=categorias_data)
 
 @app.route('/pesquisar_certificados', methods=['GET', 'POST'])
@@ -314,4 +314,5 @@ def download_certificados():
     return send_file(pdf_buffer, as_attachment=True, download_name='certificados.pdf', mimetype='application/pdf')
 
 if __name__ == '__main__':
-    app.run(debug=True)
+    app.run(host='0.0.0.0', port=5000, debug=True)
+
