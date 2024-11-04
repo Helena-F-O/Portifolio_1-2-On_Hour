@@ -3,7 +3,7 @@ name: CI/CD Pipeline
 on:
   push:
     branches:
-      - main  # ou o seu branch principal
+      - main  # O branch que você deseja monitorar
 
 jobs:
   build:
@@ -16,23 +16,20 @@ jobs:
     - name: Set up Python
       uses: actions/setup-python@v2
       with:
-        python-version: '3.9'  # ou a versão do Python que seu projeto está usando
+        python-version: '3.9'  # Ajuste para a versão do Python que você está usando
 
     - name: Install Dependencies
       run: |
         python -m pip install --upgrade pip
-        pip install -r requirements.txt  # Verifique se as dependências estão listadas em requirements.txt
+        pip install -r requirements.txt
 
     - name: Run Tests
       run: |
-        pytest test_app.py  # Ajuste o comando para executar seus testes
+        pytest test_app.py  # Ajuste conforme necessário
 
-    - name: Deploy
-      if: github.ref == 'refs/heads/main'  # Apenas implanta no branch principal
+    - name: Deploy to Heroku
+      env:
+        HEROKU_API_KEY: ${{ secrets.HRKU-d6225da8-022c-4edc-8cae-2f79c8541783 }}
       run: |
-        # Comandos para implantar sua aplicação
-        # Exemplo se você estiver usando Heroku:
-        # heroku git:remote -a seu-app-heroku
-        # git push heroku main
-
-        # Se você estiver usando outro método, substitua pelo seu comando de implantação
+        git remote add heroku https://git.heroku.com/${{ secrets.HEROKU_APP_NAME }}.git
+        git push heroku main
