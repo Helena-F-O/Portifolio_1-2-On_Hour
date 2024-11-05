@@ -23,7 +23,7 @@ def get_db_connection():
         connection = mysql.connector.connect(
             host=os.getenv('mysql.railway.internal'),
             user=os.getenv('root'),
-            password=os.getenv('KtjgFxEBMTZqtbGTYBGNvfTlLUnpYvKL'),
+            password=os.getenv('MREbLVosqrDoBTnRYhpMXAnUoydfstfI'),
             database=os.getenv('railway')
         )
         if connection.is_connected():
