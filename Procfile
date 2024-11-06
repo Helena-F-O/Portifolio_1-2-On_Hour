@@ -1,1 +1,1 @@
-web: waitress-serve --port=$PORT app:app
+python -m waitress --port=$PORT app:app
