@@ -17,7 +17,6 @@ from mysql.connector import Error
 # Variável de controle de login
 usuario_logado = False
 
-
 def get_db_connection():
     try:
         connection = mysql.connector.connect(
