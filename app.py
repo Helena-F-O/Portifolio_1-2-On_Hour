@@ -17,6 +17,7 @@ from flask import Flask, render_template, request, redirect, url_for, flash, ses
 from werkzeug.security import check_password_hash  # Certifique-se de que essa linha está presente
 from api.models import fetch_data
 from api.models import verificar_usuario
+import os
 
 
 
@@ -315,5 +316,5 @@ def download_certificados():
     return send_file(pdf_buffer, as_attachment=True, download_name='certificados.pdf', mimetype='application/pdf')
 
 if __name__ == '__main__':
-    port = int(os.environ.get('PORT', 8080))
+    port = int(os.environ.get('PORT', 5000))
     app.run(host='0.0.0.0', port=port, debug=True)
