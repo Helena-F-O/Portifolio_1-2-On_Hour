@@ -1,4 +1,3 @@
-from waitress import serve
 from flask import Flask, render_template, request, jsonify
 from api.models import fetch_data, fetch_certificados, fetch_categorias
 from api.models import get_certificado_by_id, update_certificado

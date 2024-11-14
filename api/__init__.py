@@ -13,7 +13,7 @@ app = Flask(
 app.config['SECRET_KEY'] = '5d41402abc4b2a76b9719d911017c592'  # Gere uma chave segura com o código sugerido
 
 # Ajuste a string de conexão para o SQL Server
-app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql.railway.internal'
+app.config['SQLALCHEMY_DATABASE_URI'] = 'mssql+pyodbc://@DESKTOP-R69VPG8\\SQLEXPRESS/onhour1?driver=ODBC+Driver+17+for+SQL+Server'
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 
 db = SQLAlchemy(app)

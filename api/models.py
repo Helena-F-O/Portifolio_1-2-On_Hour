@@ -20,10 +20,10 @@ usuario_logado = False
 def get_db_connection():
     try:
         connection = mysql.connector.connect(
-            host=os.getenv('mysql.railway.internal'),
-            user=os.getenv('root'),
-            password=os.getenv('MREbLVosqrDoBTnRYhpMXAnUoydfstfI'),
-            database=os.getenv('railway')
+            user='helena',
+            password='1234',
+            host='127.0.0.1',
+            database='onhour1'
         )
         if connection.is_connected():
             print("Conexão com o banco de dados bem-sucedida")
