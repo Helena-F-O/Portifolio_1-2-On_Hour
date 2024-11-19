@@ -222,8 +222,6 @@ def add_certificado():
     if 'usuario_id' not in session:
         return redirect(url_for('login'))
 
-    cpf_usuario_logado = session.get('cpf_usuario')
-
     if request.method == 'POST':
         cpf_usuario_logado = session.get('cpf_usuario')
         nome_certificado = request.form['nome_certificado']
