@@ -1,8 +1,9 @@
+from datetime import datetime
 from flask import Flask, render_template, request, jsonify
 from api.models import fetch_data, fetch_certificados, fetch_categorias
 from api.models import get_certificado_by_id, update_certificado
 from api.models import gerar_pdf_certificados, delete_certificado_by_id
-from api.models import fetch_certificados_participacao
+from api.models import fetch_certificados_participacao, delete_user_by_cpf
 from api.models import fetch_certificados_outros, inserir_usuario
 from api.models import get_db_connection, fetch_categorias_cpf
 from mysql.connector import Error
@@ -221,9 +222,10 @@ def add_certificado():
     if 'usuario_id' not in session:
         return redirect(url_for('login'))
 
-    usuario_cpf = session.get('usuario_cpf')
+    cpf_usuario_logado = session.get('cpf_usuario')
 
     if request.method == 'POST':
+        cpf_usuario_logado = session.get('cpf_usuario')
         nome_certificado = request.form['nome_certificado']
         horas = request.form['horas']
         data_emissao = request.form['data_emissao']
@@ -238,7 +240,7 @@ def add_certificado():
                 INSERT INTO certificados (certificado, horas, data_emissao, categoria_id, usuario_cpf)
                 VALUES (%s, %s, %s, %s, %s)
                 """
-                cursor.execute(query, (nome_certificado, horas, data_emissao, categoria_id, usuario_cpf))
+                cursor.execute(query, (nome_certificado, horas, data_emissao, categoria_id, cpf_usuario_logado))
                 connection.commit()
                 cursor.close()
                 connection.close()
@@ -265,6 +267,19 @@ def delete_certificado(id_certificado):
     except Exception as e:
         print(f"Erro ao excluir o certificado: {e}")
         return jsonify({"status": "error", "message": "Erro ao excluir certificado."}), 500
+
+
+@app.route('/delete_user/<cpf>', methods=['POST'])
+def delete_user(cpf):
+    try:
+        result = delete_user_by_cpf(cpf)
+        if result:
+            return jsonify({"status": "success", "message": "Usuário excluído com sucesso."}), 200
+        else:
+            return jsonify({"status": "error", "message": "Usuário não encontrado."}), 404
+    except Exception as e:
+        print(f"Erro ao excluir o usuário: {e}")
+        return jsonify({"status": "error", "message": "Erro ao excluir usuário."}), 500
 
 
 @app.route('/edit_certificado/<int:id_certificado>', methods=['GET', 'POST'])
@@ -313,6 +328,7 @@ def download_certificados():
     certificados = fetch_certificados(cpf_usuario)  # Função para buscar os certificados do banco
     pdf_buffer = gerar_pdf_certificados(certificados)
     return send_file(pdf_buffer, as_attachment=True, download_name='certificados.pdf', mimetype='application/pdf')
+
 
 if __name__ == '__main__':
     port = int(os.environ.get('PORT', 5000))

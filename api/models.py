@@ -1,4 +1,5 @@
 # api/models.py
+from datetime import datetime
 import mysql.connector
 from mysql.connector import Error
 from reportlab.lib.pagesizes import letter
@@ -82,7 +83,7 @@ def fetch_certificados(cpf_usuario):
         try:
             cursor = connection.cursor(dictionary=True)
             query = """
-            SELECT certificados.id_certificado, certificados.certificado, certificados.horas, categorias.categoria AS categoria
+            SELECT certificados.id_certificado, certificados.certificado, certificados.horas, certificados.data_emissao, categorias.categoria AS categoria
             FROM certificados
             JOIN categorias ON certificados.categoria_id = categorias.id_categoria
             WHERE certificados.usuario_cpf = %s  -- Filtra pelos certificados do usuário logado
@@ -213,6 +214,26 @@ def delete_certificado_by_id(id_certificado):
     else:
         print("Falha ao conectar ao banco de dados")
         return False
+
+def delete_user_by_cpf(cpf):
+    connection = get_db_connection()
+    if connection:
+        try:
+            cursor = connection.cursor()
+            query = "DELETE FROM usuarios WHERE cpf = %s"
+            cursor.execute(query, (cpf,))
+            connection.commit()
+            row_count = cursor.rowcount
+            cursor.close()
+            connection.close()
+            return row_count > 0  # Retorna True se uma linha foi afetada
+        except Error as e:
+            print(f"Erro ao excluir o usuário: {e}")
+            return False
+    else:
+        print("Falha ao conectar ao banco de dados.")
+        return False
+
 
 def update_certificado(id_certificado, certificado, horas, data_emissao, categoria):
     # Exemplo de código SQL corrigido
@@ -346,14 +367,21 @@ def gerar_pdf_certificados(certificados):
     # Linhas de atividades com nome da categoria
     data_atividades = []
     for i, cert in enumerate(certificados, start=1):
-        ano_realizacao = cert.get('data_emissao', 'N/A').split('-')[0]  # Pega apenas o ano da data
-        data_atividades.append([
-            str(i),
-            cert.get('certificado', 'N/A'),
-            ano_realizacao,
-            cert.get('horas', 'N/A'),
-            '', '', ''
-        ])
+        data_emissao = cert.get('data_emissao', 'N/A')
+        if data_emissao != 'N/A':
+            try:
+                # Garantir que data_emissao seja formatada como string no formato desejado
+                if isinstance(data_emissao, str):
+                    data_emissao = datetime.strptime(data_emissao, '%Y-%m-%d')
+                data_emissao_formatada = data_emissao.strftime('%d/%m/%Y')
+            except ValueError:
+                data_emissao_formatada = 'N/A'
+        else:
+            data_emissao_formatada = 'N/A'
+
+    data_atividades.append([str(i), cert.get('certificado', 'N/A'), data_emissao_formatada,
+    cert.get('horas', 'N/A'), '', '', ''])
+
 
     # Completar linhas até 15
     for i in range(len(certificados) + 1, 16):

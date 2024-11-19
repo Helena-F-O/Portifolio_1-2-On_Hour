@@ -33,8 +33,7 @@
     <div class="sidenav-header">
       <i class="fas fa-times p-3 cursor-pointer text-white opacity-5 position-absolute end-0 top-0 d-none d-xl-none"
         aria-hidden="true" id="iconSidenav"></i>
-      <a class="navbar-brand m-0" href=" https://demos.creative-tim.com/material-dashboard/pages/dashboard "
-        target="_blank">
+      <a class="navbar-brand m-0" href="{{ url_for('index') }}" target="_blank">
         <img src="../assets/img/logo-ct.png" class="navbar-brand-img h-100" alt="main_logo">
         <span class="ms-1 font-weight-bold text-white">On Hour</span>
       </a>
@@ -92,14 +91,6 @@
               <i class="material-icons opacity-10">person</i>
             </div>
             <span class="nav-link-text ms-1">Profile</span>
-          </a>
-        </li>
-        <li class="nav-item">
-          <a class="nav-link text-white " href="{{ url_for('signin') }}">
-            <div class="text-white text-center me-2 d-flex align-items-center justify-content-center">
-              <i class="material-icons opacity-10">login</i>
-            </div>
-            <span class="nav-link-text ms-1">Sign In</span>
           </a>
         </li>
         <li class="nav-item">
@@ -161,6 +152,9 @@
                       usuario.cpf }}</li>
                     <li class="list-group-item border-0 ps-0 text-sm"><strong class="text-dark">Horas Exigidas:</strong>
                       &nbsp; {{ usuario.horas_exigidas }}h</li>
+                    <li class="list-group-item border-0 ps-0 text-sm">
+                      <button class="btn btn-danger btn-sm" onclick="confirmDelete('{{ usuario.cpf }}')">Excluir Perfil</button>
+                    </li>                      
                   </ul>
                 </div>
               </div>
@@ -190,6 +184,31 @@
   <script src="../assets/js/core/bootstrap.min.js"></script>
   <script src="../assets/js/plugins/perfect-scrollbar.min.js"></script>
   <script src="../assets/js/plugins/smooth-scrollbar.min.js"></script>
+  <script>
+    function confirmDelete(cpf) {
+      // Mostrar o alerta de confirmação
+      if (confirm("Tem certeza de que deseja excluir este perfil? Esta ação é irreversível.")) {
+        // Fazer uma requisição para o backend para excluir o usuário
+        fetch(`/delete_user/${cpf}`, {
+          method: 'POST',
+        })
+        .then(response => {
+          if (response.ok) {
+            alert("Perfil excluído com sucesso!");
+            // Redirecionar para a página inicial ou lista de usuários
+            window.location.href = "/sign-in";
+          } else {
+            alert("Erro ao excluir o perfil. Tente novamente.");
+          }
+        })
+        .catch(error => {
+          console.error("Erro:", error);
+          alert("Erro ao excluir o perfil. Tente novamente.");
+        });
+      }
+    }
+  </script>
+  
   <script>
     var win = navigator.platform.indexOf('Win') > -1;
     if (win && document.querySelector('#sidenav-scrollbar')) {

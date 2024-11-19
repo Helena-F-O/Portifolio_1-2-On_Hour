@@ -1,5 +1,6 @@
-Comandos uteis para o projeto
+#Comandos uteis para o projeto
 
+#Intaladores
 pip install -r requirements.txt
 pip install flask_sqlalchemy
 pip install pytest
@@ -8,21 +9,53 @@ pip install pyodbc
 pip install reportlab
 pip install pytest flask pytest-flask
 
-
 pip install pytest pytest-cov flask-testing
 pip install pytest pytest-cov
 pytest --cov=api --cov-report=html
 
 
 
-
+#Criar, ativar, desativar ambiente virtual
 deactivate
 python -m venv venv
+#Windows
 .\venv\Scripts\activate
+#UBUNTU
+source venv/bin/activate
 
+#Testes
 pytest tests/test_models.py
-
 coverage run -m pytest
 coverage report
 coverage html
 
+
+#Producao:
+#Verificar porta
+sudo lsof -i :5000
+sudo kill $(lsof -t -i :5000)
+sudo kill 28235
+
+#Entrar na pasta
+cd ~/Portifolio_1-2-On_Hour
+
+#Ativar ambiente
+source venv/bin/activate
+
+#Ativar sessão
+tmux new -s minha_sessao
+
+#Rodar aplicação
+python app.py
+
+#Sair sem parar a aplicação
+Ctrl + b
+d
+
+#Verificar Aplicação
+tmux attach -t minha_sessao
+
+#Fechar
+tmux attach -t minha_sessao
+Ctrl + C
+exit
