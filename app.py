@@ -18,6 +18,7 @@ from werkzeug.security import check_password_hash  # Certifique-se de que essa l
 from api.models import fetch_data
 from api.models import verificar_usuario
 import os
+from flask_talisman import Talisman
 
 
 
@@ -25,6 +26,8 @@ import os
 app = Flask(__name__, static_folder='assets', template_folder='pages')
 app.secret_key = 'minha_chave_temporaria'
 
+# Configurações de segurança
+Talisman(app)
 
 import bcrypt
  
