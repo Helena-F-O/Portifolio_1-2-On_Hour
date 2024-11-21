@@ -46,15 +46,10 @@ def apply_csp(response):
  
 @app.route('/deploy', methods=['POST'])
 def deploy():
-    # Verifica se o webhook recebeu uma requisição válida (você pode adicionar segurança aqui)
+    # Verifica se o webhook recebeu uma requisição válida (adicionar segurança aqui)
     if request.method == 'POST':
-        # Realiza o git pull para puxar as alterações do repositório
-        os.chdir('/home/ubuntu/Portifolio_1-2-On_Hour')  # Altere para o diretório do seu repositório
-        subprocess.run(['git', 'pull', 'origin', 'main'])
-        
-        # Reinicia a aplicação Flask (se estiver rodando com systemd ou diretamente)
-        subprocess.run(['systemctl', 'restart', 'flaskapp'])
-
+        # Chama o script de deploy
+        subprocess.run(['/path/to/deploy.sh'])  # Substitua pelo caminho completo para o seu script deploy.sh
         return 'Deploy executado com sucesso!', 200
     return 'Método inválido', 400
 
