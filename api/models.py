@@ -21,7 +21,7 @@ usuario_logado = False
 def get_db_connection():
     try:
         connection = mysql.connector.connect(
-            user='root',
+            user='helena',
             password='1234',
             host='127.0.0.1',
             database='onhour1'
