@@ -31,6 +31,18 @@ app.secret_key = 'minha_chave_temporaria'
 Talisman(app)
 
 import bcrypt
+
+@app.after_request
+def apply_csp(response):
+    # Permitir fontes do Google, FontAwesome, Material Icons, e scripts necessários
+    response.headers['Content-Security-Policy'] = (
+        "default-src 'self'; "
+        "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com https://fonts.gstatic.com; "
+        "script-src 'self' 'unsafe-inline' https://kit.fontawesome.com https://buttons.github.io; "
+        "font-src 'self' https://fonts.gstatic.com; "
+        "img-src 'self' data:;"
+    )
+    return response
  
 @app.route('/deploy', methods=['POST'])
 def deploy():
