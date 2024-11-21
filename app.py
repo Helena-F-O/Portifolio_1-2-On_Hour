@@ -1,5 +1,5 @@
 from datetime import datetime
-from flask import Flask, render_template, request, jsonify
+from flask import Flask, render_template, request, jsonify, Response
 from api.models import fetch_data, fetch_certificados, fetch_categorias
 from api.models import get_certificado_by_id, update_certificado
 from api.models import gerar_pdf_certificados, delete_certificado_by_id
@@ -18,7 +18,7 @@ from werkzeug.security import check_password_hash  # Certifique-se de que essa l
 from api.models import fetch_data
 from api.models import verificar_usuario
 import os
-from flask_talisman import Talisman
+#from flask_talisman import Talisman
 import subprocess
 
 
@@ -28,21 +28,9 @@ app = Flask(__name__, static_folder='assets', template_folder='pages')
 app.secret_key = 'minha_chave_temporaria'
 
 # Configurações de segurança
-Talisman(app)
+#Talisman(app)
 
 import bcrypt
-
-@app.after_request
-def apply_csp(response):
-    # Permitir fontes do Google, FontAwesome, Material Icons, e scripts necessários
-    response.headers['Content-Security-Policy'] = (
-        "default-src 'self'; "
-        "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com https://fonts.gstatic.com; "
-        "script-src 'self' 'unsafe-inline' https://kit.fontawesome.com https://buttons.github.io; "
-        "font-src 'self' https://fonts.gstatic.com; "
-        "img-src 'self' data:;"
-    )
-    return response
  
 @app.route('/deploy', methods=['POST'])
 def deploy():
