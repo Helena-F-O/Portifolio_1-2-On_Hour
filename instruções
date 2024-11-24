@@ -48,7 +48,7 @@ tmux new -s minha_sessao
 #Rodar aplicação
 python app.py
 
-#Sair sem parar a aplicação
+#Sair sem parar a aplicação (aperte control B e depois apenas a letra D)
 Ctrl + b
 d
 
