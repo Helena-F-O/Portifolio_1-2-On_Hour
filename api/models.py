@@ -327,22 +327,23 @@ def gerar_pdf_certificados(certificados):
     from reportlab.lib import colors
     from reportlab.lib.styles import getSampleStyleSheet, ParagraphStyle
     from reportlab.lib.units import cm
+    from datetime import datetime
 
     buffer = BytesIO()
     doc = SimpleDocTemplate(buffer, pagesize=letter)
     elements = []
 
-    # Estilos personalizados com fonte reduzida (tamanho 6)
+    # Estilos personalizados
     styles = getSampleStyleSheet()
     normal_style = ParagraphStyle(name='Normal', fontSize=6, leading=8)
     title_style = ParagraphStyle(name='Title', fontSize=8, leading=10, alignment=1)
 
-    # Título principal com fonte menor
+    # Títulos principais
     elements.append(Paragraph("CENTRO UNIVERSITÁRIO CATÓLICA DE SANTA CATARINA", normal_style))
     elements.append(Paragraph("CURSO DE BACHARELADO EM ENGENHARIA DE SOFTWARE", normal_style))
     elements.append(Paragraph("FORMULÁRIO DE SOLICITAÇÃO DE VALIDAÇÃO DAS ATIVIDADES COMPLEMENTARES", title_style))
 
-    # Informações de identificação com tamanho ajustado
+    # Informações de identificação
     data_identificacao = [
         ['IDENTIFICAÇÃO DO ACADÊMICO (A)', '', '', ''],
         ['Nome:', '', 'Fase:', 'Matrícula:']
@@ -364,13 +365,12 @@ def gerar_pdf_certificados(certificados):
         ['Nº', 'Atividade', 'Ano de Realização', 'Carga Horária', 'Deferido', 'Carga Horária Validada', 'Observações']
     ]
     
-    # Linhas de atividades com nome da categoria
+    # Linhas de atividades com os certificados
     data_atividades = []
     for i, cert in enumerate(certificados, start=1):
         data_emissao = cert.get('data_emissao', 'N/A')
         if data_emissao != 'N/A':
             try:
-                # Garantir que data_emissao seja formatada como string no formato desejado
                 if isinstance(data_emissao, str):
                     data_emissao = datetime.strptime(data_emissao, '%Y-%m-%d')
                 data_emissao_formatada = data_emissao.strftime('%d/%m/%Y')
@@ -379,9 +379,15 @@ def gerar_pdf_certificados(certificados):
         else:
             data_emissao_formatada = 'N/A'
 
-    data_atividades.append([str(i), cert.get('certificado', 'N/A'), data_emissao_formatada,
-    cert.get('horas', 'N/A'), '', '', ''])
-
+        data_atividades.append([
+            str(i),
+            cert.get('certificado', 'N/A'),
+            data_emissao_formatada,
+            cert.get('horas', 'N/A'),
+            '',
+            '',
+            ''
+        ])
 
     # Completar linhas até 15
     for i in range(len(certificados) + 1, 16):

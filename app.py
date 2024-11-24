@@ -34,11 +34,14 @@ import bcrypt
  
 @app.route('/deploy', methods=['POST'])
 def deploy():
-    # Verifica se o webhook recebeu uma requisição válida (adicionar segurança aqui)
+    # Verifica se o webhook recebeu uma requisição válida
     if request.method == 'POST':
-        # Chama o script de deploy
-        subprocess.run(['/path/to/deploy.sh'])  # Substitua pelo caminho completo para o seu script deploy.sh
-        return 'Deploy executado com sucesso!', 200
+        try:
+            # Executa o script de deploy
+            subprocess.run(['/bin/bash', '/home/ubuntu/Portifolio_1-2-On_Hour/deploy.sh'], check=True)
+            return 'Deploy executado com sucesso!', 200
+        except subprocess.CalledProcessError as e:
+            return f'Erro ao executar deploy: {e}', 500
     return 'Método inválido', 400
 
 
