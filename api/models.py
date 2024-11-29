@@ -1,22 +1,10 @@
-# api/models.py
-from datetime import datetime
 import mysql.connector
 from mysql.connector import Error
-from reportlab.lib.pagesizes import letter
-from reportlab.lib.units import inch
-from reportlab.lib.styles import getSampleStyleSheet
-from io import BytesIO
-from reportlab.platypus import SimpleDocTemplate, Table, TableStyle, Paragraph
-import bcrypt
-from mysql.connector import Error
-import mysql.connector
-from functools import wraps
-from flask import session, redirect, url_for
-import bcrypt
-from mysql.connector import Error
+
 
 # Variável de controle de login
 usuario_logado = False
+
 
 def get_db_connection():
     try:
@@ -29,9 +17,10 @@ def get_db_connection():
         if connection.is_connected():
             print("Conexão com o banco de dados bem-sucedida")
             return connection
-    except Error as e:
+    except Exception as e:
         print(f"Erro ao conectar ao MySQL: {e}")
         return None
+
 
 def verificar_usuario(email, senha):
     connection = get_db_connection()
@@ -60,13 +49,14 @@ def fetch_data(cpf_usuario):
         try:
             cursor = connection.cursor(dictionary=True)
             query = """
-            SELECT cpf, usuario, email, senha, horas_exigidas 
-            FROM usuarios 
+            SELECT cpf, usuario, email, senha, horas_exigidas
+            FROM usuarios
             WHERE cpf = %s  -- Filtro pelo CPF
             """
             cursor.execute(query, (cpf_usuario,))
             data = cursor.fetchall()
-            print("Dados retornados do banco de dados:", data)  # Verificar o conteúdo retornado
+            # Verificar o conteúdo retornado
+            print("Dados retornados do banco de dados:", data)
             cursor.close()
             connection.close()
             return data
@@ -83,10 +73,15 @@ def fetch_certificados(cpf_usuario):
         try:
             cursor = connection.cursor(dictionary=True)
             query = """
-            SELECT certificados.id_certificado, certificados.certificado, certificados.horas, certificados.data_emissao, categorias.categoria AS categoria
+            SELECT certificados.id_certificado,
+            certificados.certificado,
+            certificados.horas,
+            certificados.data_emissao,
+            categorias.categoria AS categoria
             FROM certificados
-            JOIN categorias ON certificados.categoria_id = categorias.id_categoria
-            WHERE certificados.usuario_cpf = %s  -- Filtra pelos certificados do usuário logado
+            JOIN categorias
+            ON certificados.categoria_id = categorias.id_categoria
+            WHERE certificados.usuario_cpf = %s
             """
             cursor.execute(query, (cpf_usuario,))
             data = cursor.fetchall()
@@ -123,20 +118,21 @@ def inserir_usuario(cpf, usuario, email, senha, horas_exigidas):
     return False
 
 
-
 def fetch_categorias():
     connection = get_db_connection()
     if connection:
         try:
             cursor = connection.cursor(dictionary=True)
             query = """
-            SELECT id_categoria, categoria, 
-                   horas_maximas, 
-                   COALESCE(SUM(certificados.horas), 0) AS total_horas, 
+            SELECT id_categoria, categoria,
+                   horas_maximas,
+                   COALESCE(SUM(certificados.horas), 0) AS total_horas,
                    COALESCE((SUM(certificados.horas) / categorias.horas_maximas) * 100, 0) AS percentual
             FROM categorias
-            LEFT JOIN certificados ON categorias.id_categoria = certificados.categoria_id
-            GROUP BY categorias.id_categoria, categorias.categoria, categorias.horas_maximas
+            LEFT JOIN certificados
+            ON categorias.id_categoria = certificados.categoria_id
+            GROUP BY categorias.id_categoria,
+            categorias.categoria, categorias.horas_maximas
             """
             cursor.execute(query)
             data = cursor.fetchall()
@@ -156,14 +152,14 @@ def fetch_categorias_cpf(cpf_usuario):
         try:
             cursor = connection.cursor(dictionary=True)
             query = """
-            SELECT 
-                categorias.id_categoria, 
-                categorias.categoria, 
-                categorias.horas_maximas, 
-                COALESCE(SUM(certificados.horas), 0) AS total_horas, 
+            SELECT
+                categorias.id_categoria,
+                categorias.categoria,
+                categorias.horas_maximas,
+                COALESCE(SUM(certificados.horas), 0) AS total_horas,
                 COALESCE((SUM(certificados.horas) / categorias.horas_maximas) * 100, 0) AS percentual
             FROM categorias
-            LEFT JOIN certificados 
+            LEFT JOIN certificados
                 ON categorias.id_categoria = certificados.categoria_id
                 AND certificados.usuario_cpf = %s  -- Filtro pelo CPF
             GROUP BY categorias.id_categoria, categorias.categoria, categorias.horas_maximas
@@ -178,7 +174,6 @@ def fetch_categorias_cpf(cpf_usuario):
     else:
         print("Falha ao conectar ao banco de dados")
     return []
-
 
 
 def add_certificado(nome_certificado, horas, data_emissao, categoria_id, cpf_usuario):
@@ -197,6 +192,7 @@ def add_certificado(nome_certificado, horas, data_emissao, categoria_id, cpf_usu
     except Error as e:
         return False, str(e)
 
+
 def delete_certificado_by_id(id_certificado):
     connection = get_db_connection()
     if connection:
@@ -214,6 +210,7 @@ def delete_certificado_by_id(id_certificado):
     else:
         print("Falha ao conectar ao banco de dados")
         return False
+
 
 def delete_user_by_cpf(cpf):
     connection = get_db_connection()
@@ -237,8 +234,8 @@ def delete_user_by_cpf(cpf):
 
 def update_certificado(id_certificado, certificado, horas, data_emissao, categoria):
     # Exemplo de código SQL corrigido
-    query = """UPDATE certificados 
-               SET certificado = %s, horas = %s, data_emissao = %s, categoria_id = %s 
+    query = """UPDATE certificados
+               SET certificado = %s, horas = %s, data_emissao = %s, categoria_id = %s
                WHERE id_certificado = %s"""
     params = (certificado, horas, data_emissao, categoria, id_certificado)
     # Execute a query no banco de dados
@@ -251,11 +248,11 @@ def get_certificado_by_id(id_certificado):
         try:
             cursor = connection.cursor(dictionary=True)
             query = """
-            SELECT certificados.id_certificado, 
-                   certificados.certificado, 
-                   certificados.horas, 
-                   certificados.data_emissao, 
-                   certificados.categoria_id, 
+            SELECT certificados.id_certificado,
+                   certificados.certificado,
+                   certificados.horas,
+                   certificados.data_emissao,
+                   certificados.categoria_id,
                    categorias.categoria AS categoria_nome
             FROM certificados
             JOIN categorias ON certificados.categoria_id = categorias.id_categoria
@@ -271,7 +268,6 @@ def get_certificado_by_id(id_certificado):
     else:
         print("Falha ao conectar ao banco de dados")
     return None
-
 
 
 def fetch_certificados_participacao(cpf_usuario):
@@ -297,6 +293,7 @@ def fetch_certificados_participacao(cpf_usuario):
         print("Falha ao conectar ao banco de dados")
     return []
 
+
 def fetch_certificados_outros(cpf_usuario):
     connection = get_db_connection()
     if connection:
@@ -319,6 +316,7 @@ def fetch_certificados_outros(cpf_usuario):
     else:
         print("Falha ao conectar ao banco de dados")
     return []
+
 
 def gerar_pdf_certificados(certificados):
     from reportlab.lib.pagesizes import letter
@@ -364,7 +362,7 @@ def gerar_pdf_certificados(certificados):
         ['Dados Certificados', 'Para Uso da Instituição', '', '', '', ''],
         ['Nº', 'Atividade', 'Ano de Realização', 'Carga Horária', 'Deferido', 'Carga Horária Validada', 'Observações']
     ]
-    
+
     # Linhas de atividades com os certificados
     data_atividades = []
     for i, cert in enumerate(certificados, start=1):
