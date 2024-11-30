@@ -1,10 +1,11 @@
 # Portifolio 1 e 2 - Projeto On Hour
 
 Projeto de Portifólio para conclusão do curso de Engenharia de Software.
+Projeto de gestão de horas complementares com o intuito de facilitar esse controle para os alunos e com potencial de desenvolvimento de features para as intituições acadêmicas.
 
-## Ambiente em produção
+## Acesso à aplicação
 
-http://18.224.21.187:5000/login
+Aplicação em execução: http://18.224.21.187:5000/login
 
 
 ## Intruções para instalação do sistemae execução de forma local
@@ -16,11 +17,12 @@ http://18.224.21.187:5000/login
 5. Abrir o link da aplicação;
 
 
-## Documento RFC
+## Documentação completa
 
-Documento do RFC se encontra no Github Wiki do repositório.
+A documentação detalhada do projeto está disponível na 📘 Wiki do Repositório Nela você encontra informações sobre:
 
+⚙️ Especificações técnicas do sistema.
 
-## Trello
+📄 Documentação detalhada da aplicação.
 
-Link para projeto no Trello: https://trello.com/invite/b/65ef9632421546f08adfb10d/ATTI931c468defe321ecb6351a09c1dc4573541D1BD6/portifolio
+🖥️ Modelagem do sistema.
