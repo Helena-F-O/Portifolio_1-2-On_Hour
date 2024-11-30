@@ -56,7 +56,7 @@ def login():
             flash('Login ou senha incorretos. Tente novamente.', 'danger')
             return redirect(url_for('login'))
 
-    return render_template('sign-in.html')  # Use seu template de login aqui
+    return render_template('sign-in.html')
 
 
 # Rota de logout
@@ -461,7 +461,6 @@ def edit_certificado(id_certificado):
 def download_certificados():
 
     cpf_usuario = session.get('cpf_usuario')
-    # Conectar ao banco de dados e buscar dados dos certificados
     # Função para buscar os certificados do banco
     certificados = fetch_certificados(cpf_usuario)
     pdf_buffer = gerar_pdf_certificados(certificados)
