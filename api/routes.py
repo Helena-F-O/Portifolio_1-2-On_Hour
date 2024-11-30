@@ -12,7 +12,7 @@ def index():
 @routes_bp.route('/pages/<path:path>')
 def serve_pages(path):
     try:
-        # Serve HTML pages from the 'pages' folder
+        # Pega as paginas HTML da pasta Pages
         return render_template(f'{path}', data=data)
     except Exception as e:
         print(f'Error serving {path}: {e}')
@@ -20,6 +20,6 @@ def serve_pages(path):
 
 @routes_bp.route('/assets/<path:path>')
 def serve_assets(path):
-    # Serve static files from the 'assets' folder
+    # Pega os arquivos static da pasta assets
     return send_from_directory('assets', path)
 
