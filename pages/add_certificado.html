@@ -142,7 +142,6 @@
                     <input type="date" name="data_emissao" class="form-control" placeholder="Data da Emissão" required>
                   </div>
                   <div class="input-group input-group-outline mb-3">
-                    <label class="form-label">Categoria</label>
                     <select name="categoria" class="form-control">
                       {% for categoria in categorias %}
                       <option value="{{ categoria['id_categoria'] }}">{{ categoria['categoria'] }}</option>
