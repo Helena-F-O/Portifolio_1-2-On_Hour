@@ -5,7 +5,7 @@ Projeto de gestão de horas complementares com o intuito de facilitar esse contr
 
 ## Acesso à aplicação
 
-Aplicação em execução: http://18.224.21.187:5000/login
+Aplicação em execução: http://18.217.36.159:5000/login
 
 
 ## Intruções para instalação do sistemae execução de forma local
